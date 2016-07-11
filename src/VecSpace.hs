@@ -1,12 +1,14 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, FunctionalDependencies #-}
 
 module VecSpace
-( VecSpace((+:), (*:), zero)
-, EuclidVecSpace((.:))
+( VecSpace(..)
+, EuclidVecSpace(..)
 ) where
 
 class Num b => VecSpace b a | a -> b where
     (+:) :: a -> a -> a
+    (-:) :: a -> a -> a
+    x -: y = x +: ((-1) *: y)
     (*:) :: Num b => b -> a -> a
     zero :: a
 
