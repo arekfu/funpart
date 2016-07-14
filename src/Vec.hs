@@ -3,8 +3,10 @@
 module Vec
 ( cart
 , Vec3()
-, DVec3()
+, FPVec3()
+, FPFloat
 , normalize
+, toUnitVector
 , iHat
 , jHat
 , kHat
@@ -15,7 +17,8 @@ import Approx
 
 data Vec3 a = Vec3 a a a deriving Eq
 
-type DVec3 = Vec3 Double
+type FPFloat = Float
+type FPVec3 = Vec3 FPFloat
 
 -----------------
 --  instances  --
@@ -37,11 +40,14 @@ instance (Approx a, Real a, Floating a) => Approx (Vec3 a) where
     distance v1 v2 = realToFrac $ mag $ v1 -: v2
     (Vec3 x0 y0 z0) ~== (Vec3 x1 y1 z1) = x0~==x1 && y0~==y1 && z0~==z1
 
-normalize :: Double -> DVec3 -> Maybe DVec3
+normalize :: FPFloat -> FPVec3 -> Maybe FPVec3
 normalize newNorm v = let norm = mag v
                        in if norm > 0
                           then Just $ (newNorm/norm) *: v
                           else Nothing
+
+toUnitVector :: FPVec3 -> Maybe FPVec3
+toUnitVector = normalize 1.0
 
 -- | the actual value constructor
 cart :: a -> a -> a -> Vec3 a

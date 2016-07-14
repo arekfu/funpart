@@ -10,10 +10,10 @@ module Particle
 , DynParticle()
 ) where
 
-import Core
+import Vec
 import VecSpace
 
-newtype Position = Position FPVec3
+newtype Position = Pos FPVec3
     deriving (Show, Eq, VecSpace FPFloat)
 
 newtype Momentum = Mom FPVec3
@@ -26,7 +26,7 @@ data DynParticle = DP { pos :: Position
                       , mom :: Momentum
                       }
 
-data Particle = P { ptype :: ParticleType
+data Particle = P { ptype   :: ParticleType
                   , dynPart :: DynParticle
                   }
 
@@ -43,5 +43,7 @@ mkParticle :: ParticleType -> Position -> Momentum -> Particle
 mkParticle type_ r p = P type_ $ mkDynParticle r p
 
 type Distance = FPFloat
-push :: DynParticle -> Distance -> DynParticle
-push (DP r p) d = DP ((1.0 + d) *: r) p
+push :: Distance -> DynParticle -> Maybe DynParticle
+push dist (DP (Pos r) (Mom p)) = do pHat <- toUnitVector p
+                                    let r' = r +: dist *: pHat
+                                     in return $ DP (Pos r') (Mom p)
