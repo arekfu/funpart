@@ -2,6 +2,7 @@
 
 module VecTest
 ( runTests
+, AVec3(..)
 ) where
 
 import Test.QuickCheck
@@ -11,7 +12,7 @@ import Approx
 import Vec
 import VecSpace
 
-newtype (Approx a) => AVec3 a = AVec3 (Vec3 a)
+newtype (Approx a) => AVec3 a = AVec3 { aVec :: Vec3 a }
     deriving (VecSpace a, EuclidVecSpace a, Show, Eq)
 
 instance (Approx a, Arbitrary a) => Arbitrary (AVec3 a) where

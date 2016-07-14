@@ -13,6 +13,9 @@ class Approx a where
     x~==y = abs (distance x y) <= tolerance
     infix 4 ~==
 
+instance Approx Float where
+    distance x y = realToFrac $ x-y
+
 instance Approx Double where
     distance x y = x-y
 

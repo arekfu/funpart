@@ -36,6 +36,7 @@ test-suite funpart-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   other-modules:       VecTest
+                     , ParticleTest
   build-depends:       base
                      , funpart
                      , QuickCheck

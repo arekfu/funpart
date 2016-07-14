@@ -1,23 +1,27 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Particle
 ( mkParticle
-, ptype
+, mkDynParticle
 , position
 , momentum
 , ParticleType(..)
+, Position(..)
+, Momentum(..)
 , push
-, Particle()
-, DynParticle()
+, Particle(..)
+, DynParticle(..)
+, Distance
 ) where
 
 import Vec
 import VecSpace
+import Approx
 
-newtype Position = Pos FPVec3
-    deriving (Show, Eq, VecSpace FPFloat)
+newtype Position = Pos { getPos :: FPVec3 }
+    deriving (Show, Eq, VecSpace FPFloat, Approx)
 
-newtype Momentum = Mom FPVec3
-    deriving (Show, Eq, VecSpace FPFloat)
+newtype Momentum = Mom { getMom :: FPVec3 }
+    deriving (Show, Eq, VecSpace FPFloat, Approx)
 
 data ParticleType = Neutron
                   | Photon
@@ -40,8 +44,8 @@ momentum = mom . dynPart
 mkDynParticle :: Position -> Momentum -> DynParticle
 mkDynParticle = DP
 
-mkParticle :: ParticleType -> Position -> Momentum -> Particle
-mkParticle type_ r p = P type_ $ mkDynParticle r p
+mkParticle :: ParticleType -> DynParticle -> Particle
+mkParticle = P
 
 type Distance = FPFloat
 push :: Distance -> DynParticle -> Maybe DynParticle
