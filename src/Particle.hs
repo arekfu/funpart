@@ -21,14 +21,15 @@ newtype Momentum = Mom FPVec3
 
 data ParticleType = Neutron
                   | Photon
+                  deriving (Show, Eq)
 
 data DynParticle = DP { pos :: Position
                       , mom :: Momentum
-                      }
+                      } deriving (Show, Eq)
 
 data Particle = P { ptype   :: ParticleType
                   , dynPart :: DynParticle
-                  }
+                  } deriving (Show, Eq)
 
 position :: Particle -> Position
 position = pos . dynPart
