@@ -4,6 +4,10 @@ module Vec
 ( cart
 , Vec3()
 , DVec3()
+, normalize
+, iHat
+, jHat
+, kHat
 ) where
 
 import VecSpace
@@ -33,6 +37,24 @@ instance (Approx a, Real a, Floating a) => Approx (Vec3 a) where
     distance v1 v2 = realToFrac $ mag $ v1 -: v2
     (Vec3 x0 y0 z0) ~== (Vec3 x1 y1 z1) = x0~==x1 && y0~==y1 && z0~==z1
 
+normalize :: Double -> DVec3 -> Maybe DVec3
+normalize newNorm v = let norm = mag v
+                       in if norm > 0
+                          then Just $ (newNorm/norm) *: v
+                          else Nothing
+
 -- | the actual value constructor
 cart :: a -> a -> a -> Vec3 a
 cart = Vec3
+
+-- | x-axis unit vector
+iHat :: Num a => Vec3 a
+iHat = Vec3 1 0 0
+
+-- | y-axis unit vector
+jHat :: Num a => Vec3 a
+jHat = Vec3 0 1 0
+
+-- | z-axis unit vector
+kHat :: Num a => Vec3 a
+kHat = Vec3 0 0 1
