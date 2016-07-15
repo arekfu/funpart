@@ -17,7 +17,7 @@ import Approx
 
 data Vec3 a = Vec3 a a a deriving Eq
 
-type FPFloat = Float
+type FPFloat = Double
 type FPVec3 = Vec3 FPFloat
 
 -----------------

@@ -8,7 +8,7 @@ module ParticleTest
 ) where
 
 import Test.QuickCheck
-import Data.Maybe (isNothing)
+import Data.Maybe (isNothing, isJust, fromMaybe)
 
 import qualified VecTest as VT
 import VecSpace
@@ -38,21 +38,37 @@ instance Arbitrary AParticle where
                    return $ AParticle $ mkParticle (aParticleType atype) (aDynParticle adyn)
 
 instance Approx ADynParticle where
-    distance (ADynParticle dp0) (ADynParticle dp1) = distance (pos dp0) (pos dp1) + distance (mom dp0) (mom dp1)
+    distance (ADynParticle dp0) (ADynParticle dp1) =
+      let dpos = distance (pos dp0) (pos dp1)
+          dmom = distance (mom dp0) (mom dp1)
+       in dpos+dmom
 
 instance Approx AParticle where
-    distance (AParticle p0) (AParticle p1) = distance (ADynParticle $ dynPart p0) (ADynParticle $ dynPart p1) + (if ptype p0 == ptype p1 then 0.0 else 1.0)
+    distance (AParticle p0) (AParticle p1) =
+      let dpart = distance (ADynParticle $ dynPart p0) (ADynParticle $ dynPart p1)
+          dtype = if ptype p0 == ptype p1 then 0.0 else 1.0
+       in dpart+dtype
 
 prop_pushNotFails :: Distance -> ADynParticle -> Property
-prop_pushNotFails dist (ADynParticle dpart) = mag (getMom $ mom dpart) > 0.0 ==>
-                                          case push dist dpart of
-                                            Nothing -> False
-                                            _       -> True
+prop_pushNotFails dist (ADynParticle dpart) =
+    mag (getMom $ mom dpart) > 0.0 ==> isJust $ push dist dpart
 
 prop_pushFailsOnZeroMom :: Distance -> ADynParticle -> Bool
 prop_pushFailsOnZeroMom dist (ADynParticle dpart) =
     let dpart' = dpart { mom = Mom zero }
      in isNothing $ push dist dpart'
+
+backAndForth :: Distance -> DynParticle -> DynParticle
+backAndForth dist dp =
+    fromMaybe dp $ do
+        dp'  <- push dist dp
+        push (-dist) dp'
+
+prop_pushAndComeBack :: Distance -> ADynParticle -> Property
+prop_pushAndComeBack dist (ADynParticle dpart) =
+    mag (getMom $ mom dpart) > 0.0 ==>
+    let dpart' = backAndForth dist dpart
+     in ADynParticle dpart ~== ADynParticle dpart'
 
 return []
 runTests :: IO Bool
