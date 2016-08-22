@@ -13,7 +13,7 @@ import Vec
 import VecSpace
 
 newtype (Approx a) => AVec3 a = AVec3 { aVec :: Vec3 a }
-    deriving (VecSpace a, EuclidVecSpace a, Show, Eq)
+    deriving (VecSpace a, EuclidVecSpace a, Show, Eq, Functor, Monoid)
 
 instance (Approx a, Arbitrary a) => Arbitrary (AVec3 a) where
     arbitrary = AVec3 <$> liftM3 cart arbitrary arbitrary arbitrary
