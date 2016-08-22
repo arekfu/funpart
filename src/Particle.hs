@@ -1,9 +1,18 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, TemplateHaskell #-}
+
 module Particle
 ( mkParticle
 , mkDynParticle
 , position
 , momentum
+, positionVec
+, momentumVec
+, ptype
+, dynPart
+, pPosition
+, pMomentum
+, pPositionVec
+, pMomentumVec
 , ParticleType(..)
 , Position(..)
 , Momentum(..)
@@ -16,30 +25,41 @@ module Particle
 import Vec
 import VecSpace
 import Approx
+import Control.Lens
 
-newtype Position = Pos { getPos :: FPVec3 }
+newtype Position = Pos { _positionVec :: FPVec3 }
     deriving (Show, Eq, VecSpace FPFloat, Approx)
+makeLenses ''Position
 
-newtype Momentum = Mom { getMom :: FPVec3 }
+newtype Momentum = Mom { _momentumVec :: FPVec3 }
     deriving (Show, Eq, VecSpace FPFloat, Approx)
+makeLenses ''Momentum
 
 data ParticleType = Neutron
                   | Photon
                   deriving (Show, Eq)
 
-data DynParticle = DP { pos :: Position
-                      , mom :: Momentum
+data DynParticle = DP { _position :: Position
+                      , _momentum :: Momentum
                       } deriving (Show, Eq)
+makeLenses ''DynParticle
 
-data Particle = P { ptype   :: ParticleType
-                  , dynPart :: DynParticle
+data Particle = P { _ptype   :: ParticleType
+                  , _dynPart :: DynParticle
                   } deriving (Show, Eq)
+makeLenses ''Particle
 
-position :: Particle -> Position
-position = pos . dynPart
+pPosition :: Lens' Particle Position
+pPosition = dynPart.position
 
-momentum :: Particle -> Momentum
-momentum = mom . dynPart
+pMomentum :: Lens' Particle Momentum
+pMomentum = dynPart.momentum
+
+pPositionVec :: Lens' Particle FPVec3
+pPositionVec = pPosition.positionVec
+
+pMomentumVec :: Lens' Particle FPVec3
+pMomentumVec = pMomentum.momentumVec
 
 mkDynParticle :: Position -> Momentum -> DynParticle
 mkDynParticle = DP

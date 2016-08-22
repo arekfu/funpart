@@ -14,6 +14,7 @@ import qualified VecTest as VT
 import VecSpace
 import Particle
 import Approx
+import Control.Lens (view)
 
 newtype AParticleType = AParticleType { aParticleType :: ParticleType }
                         deriving (Show, Eq)
@@ -39,23 +40,23 @@ instance Arbitrary AParticle where
 
 instance Approx ADynParticle where
     distance (ADynParticle dp0) (ADynParticle dp1) =
-      let dpos = distance (pos dp0) (pos dp1)
-          dmom = distance (mom dp0) (mom dp1)
+      let dpos = distance (view position dp0) (view position dp1)
+          dmom = distance (view momentum dp0) (view momentum dp1)
        in dpos+dmom
 
 instance Approx AParticle where
     distance (AParticle p0) (AParticle p1) =
-      let dpart = distance (ADynParticle $ dynPart p0) (ADynParticle $ dynPart p1)
-          dtype = if ptype p0 == ptype p1 then 0.0 else 1.0
+      let dpart = distance (ADynParticle $ view dynPart p0) (ADynParticle $ view dynPart p1)
+          dtype = if view ptype p0 == view ptype p1 then 0.0 else 1.0
        in dpart+dtype
 
 prop_pushNotFails :: Distance -> ADynParticle -> Property
 prop_pushNotFails dist (ADynParticle dpart) =
-    mag (getMom $ mom dpart) > 0.0 ==> isJust $ push dist dpart
+    mag (view (momentum.momentumVec) dpart) > 0.0 ==> isJust $ push dist dpart
 
 prop_pushFailsOnZeroMom :: Distance -> ADynParticle -> Bool
 prop_pushFailsOnZeroMom dist (ADynParticle dpart) =
-    let dpart' = dpart { mom = Mom zero }
+    let dpart' = dpart { _momentum = Mom zero }
      in isNothing $ push dist dpart'
 
 backAndForth :: Distance -> DynParticle -> DynParticle
@@ -66,7 +67,7 @@ backAndForth dist dp =
 
 prop_pushAndComeBack :: Distance -> ADynParticle -> Property
 prop_pushAndComeBack dist (ADynParticle dpart) =
-    mag (getMom $ mom dpart) > 0.0 ==>
+    mag (view (momentum.momentumVec) dpart) > 0.0 ==>
     let dpart' = backAndForth dist dpart
      in ADynParticle dpart ~== ADynParticle dpart'
 
