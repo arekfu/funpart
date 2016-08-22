@@ -71,4 +71,4 @@ type Distance = FPFloat
 push :: Distance -> DynParticle -> Maybe DynParticle
 push dist (DP (Pos r) (Mom p)) = do pHat <- toUnitVector p
                                     let r' = r +: dist *: pHat
-                                     in return $ DP (Pos r') (Mom p)
+                                    return $ DP (Pos r') (Mom p)
