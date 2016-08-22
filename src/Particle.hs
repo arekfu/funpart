@@ -20,6 +20,7 @@ module Particle
 , Particle(..)
 , DynParticle(..)
 , Distance
+, Pushable
 ) where
 
 import Vec
@@ -68,7 +69,16 @@ mkParticle :: ParticleType -> DynParticle -> Particle
 mkParticle = P
 
 type Distance = FPFloat
-push :: Distance -> DynParticle -> Maybe DynParticle
-push dist (DP (Pos r) (Mom p)) = do pHat <- toUnitVector p
-                                    let r' = r +: dist *: pHat
-                                    return $ DP (Pos r') (Mom p)
+
+class Pushable a where
+    push :: Distance -> a -> Maybe a
+
+instance Pushable DynParticle where
+    push dist (DP (Pos r) (Mom p)) = do pHat <- toUnitVector p
+                                        let r' = r +: dist *: pHat
+                                        return $ DP (Pos r') (Mom p)
+
+instance Pushable Particle where
+    push dist (P pt dp) = do
+                            dp' <- push dist dp
+                            return $ P pt dp'
