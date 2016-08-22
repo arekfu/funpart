@@ -33,6 +33,10 @@ instance Num a => VecSpace a (Vec3 a) where
     s *: (Vec3 x y z) = Vec3 (s*x) (s*y) (s*z)
     zero = Vec3 0 0 0
 
+instance Num a => Monoid (Vec3 a) where
+    mempty = zero
+    mappend = (+:)
+
 instance Num a => EuclidVecSpace a (Vec3 a) where
     (Vec3 x0 y0 z0) .: (Vec3 x1 y1 z1) = x0*x1 + y0*y1 + z0*z1
 
