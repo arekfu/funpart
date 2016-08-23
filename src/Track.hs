@@ -18,7 +18,9 @@ import Control.Lens (makeLenses)
 import Particle
 import CrossSection
 
-data TrackPointType = CollisionPoint { _collisionXSec :: CrossSection, _secondaries :: [Track] }
+data TrackPointType = CollisionPoint { _collisionXSec :: CrossSectionValue
+                                     , _secondaries :: [Track]
+                                     }
                     | SourcePoint
                     | EndPoint
                     deriving (Show, Eq)
