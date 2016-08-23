@@ -4,7 +4,6 @@ module Vec
 ( cart
 , Vec3()
 , FPVec3()
-, FPFloat
 , normalize
 , toUnitVector
 , iHat
@@ -12,12 +11,12 @@ module Vec
 , kHat
 ) where
 
+import Core
 import VecSpace
 import Approx
 
 data Vec3 a = Vec3 a a a deriving Eq
 
-type FPFloat = Double
 type FPVec3 = Vec3 FPFloat
 
 -----------------

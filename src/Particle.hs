@@ -3,26 +3,29 @@
 module Particle
 ( mkParticle
 , mkDynParticle
+, ParticleType(..)
+, Weight
+, Position(..)
+, positionVec
+, Momentum(..)
+, momentumVec
+, DynParticle(..)
 , position
 , momentum
-, positionVec
-, momentumVec
+, weight
+, Particle(..)
 , ptype
 , dynPart
 , pPosition
 , pMomentum
 , pPositionVec
 , pMomentumVec
-, ParticleType(..)
-, Position(..)
-, Momentum(..)
-, push
-, Particle(..)
-, DynParticle(..)
 , Distance
 , Pushable
+, push
 ) where
 
+import Core
 import Vec
 import VecSpace
 import Approx
@@ -40,8 +43,11 @@ data ParticleType = Neutron
                   | Photon
                   deriving (Show, Eq)
 
+type Weight = FPFloat
+
 data DynParticle = DP { _position :: Position
                       , _momentum :: Momentum
+                      , _weight   :: Weight
                       } deriving (Show, Eq)
 makeLenses ''DynParticle
 
@@ -63,7 +69,7 @@ pMomentumVec :: Lens' Particle FPVec3
 pMomentumVec = pMomentum.momentumVec
 
 mkDynParticle :: Position -> Momentum -> DynParticle
-mkDynParticle = DP
+mkDynParticle r p = DP r p 1.0
 
 mkParticle :: ParticleType -> DynParticle -> Particle
 mkParticle = P
@@ -74,9 +80,9 @@ class Pushable a where
     push :: Distance -> a -> Maybe a
 
 instance Pushable DynParticle where
-    push dist (DP (Pos r) (Mom p)) = do pHat <- toUnitVector p
-                                        let r' = r +: dist *: pHat
-                                        return $ DP (Pos r') (Mom p)
+    push dist (DP (Pos r) (Mom p) w) = do pHat <- toUnitVector p
+                                          let r' = r +: dist *: pHat
+                                          return $ DP (Pos r') (Mom p) w
 
 instance Pushable Particle where
     push dist (P pt dp) = do
