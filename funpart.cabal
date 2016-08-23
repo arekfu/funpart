@@ -25,6 +25,7 @@ library
                      , MC
                      , SimSetup
                      , Problem
+                     , Score
   build-depends:       base >= 4.7 && < 5
                      , lens
                      , random

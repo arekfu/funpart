@@ -8,12 +8,13 @@ import System.Random (mkStdGen)
 
 import SimSetup
 import MC
+import Score
 
-type Scores = Int
+type Problem a = ReaderT SimSetup MC [a]
 
-type Problem = ReaderT SimSetup MC Scores
-
-runProblem :: Problem -> SimSetup -> Scores
+runProblem :: Score a => Problem a -> SimSetup -> [a]
 runProblem problem setup = fst $ runMC (runReaderT problem setup) initialGen
                             where seed = initialSeed setup
                                   initialGen = mkStdGen seed
+
+
