@@ -21,8 +21,7 @@ module Particle
 , pPositionVec
 , pMomentumVec
 , Distance
-, Pushable
-, push
+, Pushable(..)
 ) where
 
 import Core
