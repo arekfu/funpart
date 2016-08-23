@@ -33,11 +33,9 @@ import Control.Lens
 
 newtype Position = Pos { _positionVec :: FPVec3 }
     deriving (Show, Eq, VecSpace FPFloat, Approx)
-makeLenses ''Position
 
 newtype Momentum = Mom { _momentumVec :: FPVec3 }
     deriving (Show, Eq, VecSpace FPFloat, Approx)
-makeLenses ''Momentum
 
 data ParticleType = Neutron
                   | Photon
@@ -49,11 +47,14 @@ data DynParticle = DP { _position :: Position
                       , _momentum :: Momentum
                       , _weight   :: Weight
                       } deriving (Show, Eq)
-makeLenses ''DynParticle
 
 data Particle = P { _ptype   :: ParticleType
                   , _dynPart :: DynParticle
                   } deriving (Show, Eq)
+
+makeLenses ''Position
+makeLenses ''Momentum
+makeLenses ''DynParticle
 makeLenses ''Particle
 
 pPosition :: Lens' Particle Position
