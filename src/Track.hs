@@ -11,12 +11,12 @@ module Track
 , trackPoints
 ) where
 
-import Control.Lens
+import Control.Lens (makeLenses)
 
 import Particle
 import CrossSection
 
-data TrackPointType = CollisionPoint CrossSection
+data TrackPointType = CollisionPoint CrossSection [Track]
                     | SourcePoint
                     | EndPoint
 
@@ -25,7 +25,8 @@ data TrackPoint = TrackPoint { _pointType     :: TrackPointType
                              , _pointMomentum :: Momentum
                              , _pointWeight   :: Weight
                              }
-makeLenses ''TrackPoint
 
 newtype Track = Track { _trackPoints :: [TrackPoint] }
+
+makeLenses ''TrackPoint
 makeLenses ''Track
