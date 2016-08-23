@@ -15,11 +15,11 @@ import Particle
 type CrossSectionValue = FPFloat
 
 class CrossSection a where
-    getAbsXS :: a -> Particle -> CrossSectionValue
+    getAbsXS :: Dynamic p => a -> p -> CrossSectionValue
     getAbsXS xs p = max 0.0 $ getTotXS xs p - getScatXS xs p
-    getTotXS :: a -> Particle -> CrossSectionValue
+    getTotXS :: Dynamic p => a -> p -> CrossSectionValue
     getTotXS xs p = max 0.0 $ getAbsXS xs p + getScatXS xs p
-    getScatXS :: a -> Particle -> CrossSectionValue
+    getScatXS :: Dynamic p => a -> p -> CrossSectionValue
     getScatXS xs p = max 0.0 $ getTotXS xs p - getAbsXS xs p
 
 data ConstantXS = ConstantXS { _totXSConst :: CrossSectionValue

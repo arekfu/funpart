@@ -22,6 +22,7 @@ module Particle
 , pMomentumVec
 , Distance
 , Pushable(..)
+, Dynamic(..)
 ) where
 
 import Core
@@ -88,3 +89,12 @@ instance Pushable Particle where
     push dist (P pt dp) = do
                             dp' <- push dist dp
                             return $ P pt dp'
+
+class Dynamic a where
+    dynamic :: a -> DynParticle
+
+instance Dynamic DynParticle where
+    dynamic = id
+
+instance Dynamic Particle where
+    dynamic = _dynPart
