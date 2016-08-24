@@ -10,7 +10,6 @@ import Control.Monad (liftM3)
 
 import Approx
 import Vec
-import VecSpace
 
 newtype (Approx a) => AVec3 a = AVec3 { aVec :: Vec3 a }
     deriving (VecSpace a, EuclidVecSpace a, Show, Eq, Functor, Monoid)

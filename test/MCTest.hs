@@ -7,8 +7,12 @@ module MCTest
 import qualified Data.Vector as V
 import Test.QuickCheck
 import Data.Maybe (isNothing)
+import System.Random (mkStdGen)
 
+import Core
+import Approx
 import MC
+import Vec
 
 newtype PositiveVector a = PositiveVector (V.Vector a)
                            deriving (Show, Eq, Ord)
@@ -33,6 +37,12 @@ prop_getFirst (PositiveVector v) = let i = sampleV v 0.0
 prop_getLast :: PositiveVector Double -> Bool
 prop_getLast (PositiveVector v) = let i = sampleV v 1.1
                                    in isNothing i
+
+prop_normalisation :: Positive FPFloat -> Positive (Large Int) -> Bool
+prop_normalisation norm seed = mag randomVec ~== norm'
+    where norm' = getPositive norm
+          seed' = getLarge $ getPositive seed
+          randomVec = evalMC (sampleIsoVec norm') $ mkStdGen seed'
 
 return []
 runTests :: IO Bool

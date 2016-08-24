@@ -16,5 +16,3 @@ runProblem :: Score a => Problem a -> SimSetup -> [a]
 runProblem problem setup = fst $ runMC (runReaderT problem setup) initialGen
                             where seed = initialSeed setup
                                   initialGen = mkStdGen seed
-
-

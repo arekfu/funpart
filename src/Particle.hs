@@ -27,7 +27,6 @@ module Particle
 
 import Core
 import Vec
-import VecSpace
 import Approx
 import Control.Lens
 

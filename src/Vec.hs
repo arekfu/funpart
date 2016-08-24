@@ -9,6 +9,8 @@ module Vec
 , iHat
 , jHat
 , kHat
+, VecSpace(..)
+, EuclidVecSpace(..)
 ) where
 
 import Core
