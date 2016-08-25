@@ -36,7 +36,7 @@ instance Arbitrary ADynParticle where
 instance Arbitrary AParticle where
     arbitrary = do atype <- arbitrary
                    adyn  <- arbitrary
-                   return $ AParticle $ mkParticle (aParticleType atype) (aDynParticle adyn)
+                   return $ AParticle $ mkParticleFromDyn (aParticleType atype) (aDynParticle adyn)
 
 instance Approx ADynParticle where
     distance (ADynParticle dp0) (ADynParticle dp1) =

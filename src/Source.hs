@@ -1,57 +1,36 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE GADTs #-}
 
 module Source
-( Source(..)
+( SourceLike(..)
+, Source(..)
 , FactorizedSource(..)
-, SpaceDistribution(..)
-, center
-, MomentumDistribution(..)
-, momentumValue
-, PointwiseSpaceDistribution(..)
-, IsoMonoDistribution(..)
 , SourceIntensity
-, PointwiseIsoMonoSource
-, mkPWIMSource
 ) where
-
-import Control.Lens
 
 import Core
 import Particle
+import Source.Distributions
 import MC
 
 type SourceIntensity = FPFloat
 
-class Source a where
+class SourceLike a where
     sampleParticles :: a -> MC [Particle]
 
-data (SpaceDistribution a, MomentumDistribution b) => FactorizedSource a b =
-    FactorizedSource { spaceDistribution    :: a
-                     , momentumDistribution :: b
-                     } deriving (Show, Eq)
+-- wrapper GADT for heterogeneous collections
+data Source where
+    Source :: SourceLike a => a -> Source
 
-class SpaceDistribution a where
-    samplePosition :: a -> MC Position
+instance SourceLike Source where
+    sampleParticles (Source a) = sampleParticles a
 
-class MomentumDistribution a where
-    sampleMomentum :: a -> MC Momentum
+data FactorizedSource where
+    FactorizedSource :: (SpaceDistribution a, MomentumDistribution b) =>
+        ParticleType -> a -> b -> FactorizedSource
 
-newtype PointwiseSpaceDistribution =
-    PointwiseSpaceDistribution { _center :: Position } deriving (Show, Eq)
+instance SourceLike FactorizedSource where
+    sampleParticles (FactorizedSource typ spaceD momD) = do
+        r <- samplePosition spaceD
+        p <- sampleMomentum momD
+        return [mkParticle typ r p]
 
-instance SpaceDistribution PointwiseSpaceDistribution where
-    samplePosition source = return $ _center source
-
-newtype IsoMonoDistribution =
-    IsoMonoDistribution { _momentumValue :: FPFloat } deriving (Show, Eq)
-
-instance MomentumDistribution IsoMonoDistribution where
-    sampleMomentum source = Mom <$> sampleIsoVec (_momentumValue source)
-
-type PointwiseIsoMonoSource = FactorizedSource PointwiseSpaceDistribution IsoMonoDistribution
-
-mkPWIMSource :: Position -> FPFloat -> PointwiseIsoMonoSource
-mkPWIMSource pos mom = FactorizedSource (PointwiseSpaceDistribution pos) (IsoMonoDistribution mom)
-
-makeLenses ''PointwiseSpaceDistribution
-makeLenses ''IsoMonoDistribution

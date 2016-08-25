@@ -27,6 +27,7 @@ library
                      , Problem
                      , Score
                      , Source
+                     , Source.Distributions
   build-depends:       base >= 4.7 && < 5
                      , lens
                      , random

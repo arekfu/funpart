@@ -2,6 +2,7 @@
 
 module Particle
 ( mkParticle
+, mkParticleFromDyn
 , mkDynParticle
 , ParticleType(..)
 , Weight
@@ -71,8 +72,11 @@ pMomentumVec = pMomentum.momentumVec
 mkDynParticle :: Position -> Momentum -> DynParticle
 mkDynParticle r p = DP r p 1.0
 
-mkParticle :: ParticleType -> DynParticle -> Particle
-mkParticle = P
+mkParticle :: ParticleType -> Position -> Momentum -> Particle
+mkParticle t r p = P t (mkDynParticle r p)
+
+mkParticleFromDyn :: ParticleType -> DynParticle -> Particle
+mkParticleFromDyn = P
 
 type Distance = FPFloat
 

@@ -1,10 +1,13 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell, GADTs #-}
 
 module Score
-( Score(..)
+( ScoreLike(..)
 , ScoreValue
 , CollFlux(..)
+, Score(..)
 , collFluxValue
+, initCollFluxScore
+, updateAllByTracks
 ) where
 
 import Control.Lens
@@ -15,20 +18,37 @@ import Track
 
 type ScoreValue = FPFloat
 
-class Score a where
-    updateTrackPoint :: a -> TrackPoint -> a
-    updateTrack :: a -> Track -> a
-    updateTrack score track = foldl' updateTrackPoint score (_trackPoints track)
-    updateTracks :: a -> [Track] -> a
-    updateTracks = foldl' updateTrack
+class ScoreLike a where
+    updateByTrackPoint :: a -> TrackPoint -> a
+    updateByTrack :: a -> Track -> a
+    updateByTrack score track = foldl' updateByTrackPoint score (_trackPoints track)
+    updateByTracks :: a -> [Track] -> a
+    updateByTracks = foldl' updateByTrack
     display :: a -> IO ()
+
+updateAllByTracks :: ScoreLike a => [a] -> [Track] -> [a]
+updateAllByTracks scores tracks = map (`updateByTracks` tracks) scores
+
+
+-- now introduce a wrapper GADT for abstract collections of ScoreLike objects
+data Score where
+    Score :: ScoreLike a => a -> Score
+
+instance ScoreLike Score where
+    updateByTrackPoint (Score s) p = Score $ updateByTrackPoint s p
+    display (Score s) = display s
 
 newtype CollFlux = CollFlux { _collFluxValue :: ScoreValue }
     deriving (Show, Eq, Ord)
+
+-- make all the necessary lenses
 makeLenses ''CollFlux
 
-instance Score CollFlux where
-    updateTrackPoint score trackPoint =
+initCollFluxScore :: CollFlux
+initCollFluxScore = CollFlux 0.0
+
+instance ScoreLike CollFlux where
+    updateByTrackPoint score trackPoint =
         case trackPoint^.pointType of
             CollisionPoint xs _ -> over collFluxValue (+(1.0/xs)) score
             _ -> score
