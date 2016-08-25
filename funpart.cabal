@@ -12,6 +12,7 @@ category:            Physics
 build-type:          Simple
 -- extra-source-files:
 cabal-version:       >=1.10
+tested-with:         GHC == 7.10.3
 
 library
   hs-source-dirs:      src
