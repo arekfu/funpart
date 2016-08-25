@@ -7,6 +7,8 @@ module Score
 , Score(..)
 , collFluxValue
 , initCollFluxScore
+, updateAllByTrackPoint
+, updateAllByTrack
 , updateAllByTracks
 ) where
 
@@ -25,6 +27,12 @@ class ScoreLike a where
     updateByTracks :: a -> [Track] -> a
     updateByTracks = foldl' updateByTrack
     display :: a -> IO ()
+
+updateAllByTrackPoint :: ScoreLike a => [a] -> TrackPoint -> [a]
+updateAllByTrackPoint scores trackPoint = map (`updateByTrackPoint` trackPoint) scores
+
+updateAllByTrack :: ScoreLike a => [a] -> Track -> [a]
+updateAllByTrack scores track = map (`updateByTrack` track) scores
 
 updateAllByTracks :: ScoreLike a => [a] -> [Track] -> [a]
 updateAllByTracks scores tracks = map (`updateByTracks` tracks) scores
