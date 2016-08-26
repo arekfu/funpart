@@ -11,7 +11,7 @@ to be:
 2. An easily extensible tool to make it possible to quickly test a new
    transport algorithm, variance-reduction method, etc.;
 3. A sandbox to play around and learn more Haskell in a realistic setting
-   (that's the fun part -- pun intended).
+   (that's the fun part — pun intended).
 
 It is *not* (yet) supposed to be:
 
