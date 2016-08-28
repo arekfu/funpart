@@ -26,6 +26,7 @@ library
                      , MC
                      , SimSetup
                      , Problem
+                     , Problem.Common
                      , Score
                      , Source
                      , Source.Distributions
