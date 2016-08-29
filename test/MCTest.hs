@@ -8,6 +8,7 @@ import qualified Data.Vector as V
 import Test.QuickCheck
 import Data.Maybe (isNothing)
 import System.Random (mkStdGen)
+import Control.Monad.State (evalState)
 
 import Core
 import Approx
@@ -42,7 +43,7 @@ prop_normalisation :: Positive FPFloat -> Positive (Large Int) -> Bool
 prop_normalisation norm seed = mag randomVec ~== norm'
     where norm' = getPositive norm
           seed' = getLarge $ getPositive seed
-          randomVec = evalMC (sampleIsoVec norm') $ mkStdGen seed'
+          randomVec = evalState (sampleIsoVec norm') $ mkStdGen seed'
 
 return []
 runTests :: IO Bool

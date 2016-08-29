@@ -1,19 +1,21 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Problem
 ( Problem
 , runProblem
 , fixedSourceProblem
 ) where
 
-import Control.Monad.Reader (ask, asks, forM)
-import Data.List (foldl')
+import Control.Monad.RWS (asks, forM_, MonadReader, MonadState, MonadWriter)
+import System.Random (StdGen)
 
 import qualified SimSetup
-import Score
 import Problem.Common
+import Track
 
-fixedSourceProblem :: Problem [Score]
+fixedSourceProblem :: (MonadReader SimSetup.SimSetup m, MonadState StdGen m, MonadWriter [Track] m)
+                   => m ()
 fixedSourceProblem = do
-    (SimSetup.SimSetup _ _ _ _ _ scores) <- ask
     nShots <- asks SimSetup.nShots
-    tracks <- forM [1..nShots] runHistory
-    return $ foldl' updateAllByTracks scores tracks
+    forM_ [1..nShots] $ const runHistory
+    return ()

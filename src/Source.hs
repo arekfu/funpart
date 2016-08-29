@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs #-}
+{-# LANGUAGE GADTs, FlexibleContexts #-}
 
 module Source
 ( SourceLike(..)
@@ -7,15 +7,17 @@ module Source
 , SourceIntensity
 ) where
 
+import System.Random (StdGen)
+import Control.Monad.State.Class (MonadState)
+
 import Core
 import Particle
 import Source.Distributions
-import MC
 
 type SourceIntensity = FPFloat
 
 class SourceLike a where
-    sampleParticles :: a -> MC [Particle]
+    sampleParticles :: MonadState StdGen m => a -> m [Particle]
 
 -- wrapper GADT for heterogeneous collections
 data Source where

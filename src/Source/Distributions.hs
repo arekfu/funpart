@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell, FlexibleContexts #-}
 
 module Source.Distributions
 ( SpaceDistribution(..)
@@ -10,16 +10,18 @@ module Source.Distributions
 ) where
 
 import Control.Lens
+import Control.Monad.State.Class (MonadState)
+import System.Random (StdGen)
 
 import Core
-import MC
 import Particle
+import MC (sampleIsoVec)
 
 class SpaceDistribution a where
-    samplePosition :: a -> MC Position
+    samplePosition :: MonadState StdGen m => a -> m Position
 
 class MomentumDistribution a where
-    sampleMomentum :: a -> MC Momentum
+    sampleMomentum :: MonadState StdGen m => a -> m Momentum
 
 newtype PointwiseSpaceDistribution =
     PointwiseSpaceDistribution { _center :: Position } deriving (Show, Eq)
