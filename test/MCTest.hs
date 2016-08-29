@@ -45,6 +45,12 @@ prop_normalisation norm seed = mag randomVec ~== norm'
           seed' = getLarge $ getPositive seed
           randomVec = evalState (sampleIsoVec norm') $ mkStdGen seed'
 
+prop_positiveExp :: Positive FPFloat -> Positive (Large Int) -> Bool
+prop_positiveExp lambda seed = expRandom >= 0.0
+    where expRandom = evalState (sampleExp lambda') $ mkStdGen seed'
+          lambda' = getPositive lambda
+          seed' = getLarge $ getPositive seed
+
 return []
 runTests :: IO Bool
 runTests = $quickCheckAll
