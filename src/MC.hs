@@ -5,6 +5,7 @@ module MC
 , Seed
 , uniform
 , uniforms
+, sampleExp
 , sampleV
 , sampleUniformV
 , getGen
@@ -36,6 +37,16 @@ uniforms :: (Random a, Fractional a, MonadState StdGen m)
          => Int
          -> m [a]
 uniforms n = forM [1..n] $ const uniform
+
+-- | Sample from an exponential distribution of the form
+-- @
+-- f(x) = exp(-&#x3BB; x)/&#x3BB;
+-- @
+sampleExp :: (Random a, Floating a, MonadState StdGen m)
+          => a  -- ^ The distribution
+          -> m a
+sampleExp lambda = do xi <- uniform
+                      return $ (-lambda) * log xi
 
 sampleV :: (Num a, Ord a, Fractional a, Random a)
         => V.Vector a
