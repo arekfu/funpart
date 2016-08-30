@@ -3,7 +3,6 @@
 module Track
 ( TrackPointType(..)
 , collisionXSec
-, secondaries
 , TrackPoint(..)
 , pointType
 , pointVertex
@@ -19,7 +18,6 @@ import Particle
 import CrossSection
 
 data TrackPointType = CollisionPoint { _collisionXSec :: CrossSectionValue
-                                     , _secondaries :: [Track]
                                      }
                     | SourcePoint
                     | EndPoint

@@ -81,7 +81,7 @@ makeLenses ''CollFlux
 instance ScoreLike CollFlux where
     updateByTrackPoint score trackPoint =
         case trackPoint^.pointType of
-            CollisionPoint xs _ -> over collFluxValue (+(1.0/xs)) score
+            CollisionPoint xs -> over collFluxValue (+(1.0/xs)) score
             _ -> score
     display score = "collision flux: " ++ show (score^.collFluxValue)
 

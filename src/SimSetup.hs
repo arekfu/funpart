@@ -8,8 +8,7 @@ import Score
 import MC (Seed)
 
 data SimSetup =
-    SimSetup { theAbsXSec  :: CrossSectionValue
-             , theTotXSec  :: CrossSectionValue
+    SimSetup { theXSec     :: CrossSection
              , initialSeed :: Seed
              , nShots      :: Integer
              , source      :: Source

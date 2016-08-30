@@ -19,6 +19,7 @@ module Particle
 , dynPart
 , pPosition
 , pMomentum
+, pWeight
 , pPositionVec
 , pMomentumVec
 , Distance
@@ -62,6 +63,9 @@ pPosition = dynPart.position
 
 pMomentum :: Lens' Particle Momentum
 pMomentum = dynPart.momentum
+
+pWeight :: Lens' Particle Weight
+pWeight = dynPart.weight
 
 pPositionVec :: Lens' Particle FPVec3
 pPositionVec = pPosition.positionVec
