@@ -14,3 +14,6 @@ data SimSetup =
              , source      :: Source
              , scores      :: [Score]
              }
+
+instance Show SimSetup where
+    show (SimSetup _ seed n _ _) = show seed ++ "; " ++ show n

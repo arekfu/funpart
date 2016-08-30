@@ -2,6 +2,10 @@
 
 module Problem.Common
 ( runHistory
+, nextStep
+, steps
+, solve
+, solveAll
 ) where
 
 import Control.Monad.RWS.Strict
