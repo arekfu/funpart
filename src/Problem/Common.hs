@@ -1,4 +1,4 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Problem.Common
 ( runHistory
