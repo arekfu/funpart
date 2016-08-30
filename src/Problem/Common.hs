@@ -24,7 +24,7 @@ distanceToCollision :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m)
                     -> m Distance
 distanceToCollision p = do xSecs <- asks SimSetup.theXSec
                            let totXSec = getTotXS xSecs p
-                           sampleExp totXSec
+                           sampleExp (1.0/totXSec)
 
 sampleIsoScattering :: MonadState StdGen m
                     => Particle
