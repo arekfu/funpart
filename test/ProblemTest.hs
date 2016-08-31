@@ -5,35 +5,38 @@ module ProblemTest
 ) where
 
 import Test.QuickCheck
+import Control.Lens
+import Data.Maybe (fromJust)
 
-import VecTest hiding (runTests)
 import ParticleTest hiding (runTests)
+import SimSetupTest
 
-import Core
+import Approx
+import Step
+import Particle
 import Problem
 import Problem.Common
-import SimSetup
-import Particle
-import CrossSection
-import Source
-import Source.Distributions
+import Vec
 
-newtype ASimSetup = ASimSetup SimSetup deriving Show
+prop_nextStepType :: AParticle -> ASimSetup -> Property
+prop_nextStepType (AParticle p) (ASimSetup setup) =
+        counterexample (show stepPoint) $
+        mag (p^.pMomentumVec) > 0.0 ==>
+        case stepPoint^.stepPointType of
+            SourceStepPoint -> False
+            _               -> True
+        where stepPoint = fst $ runAnyProblem (nextStep p) setup
 
-instance Arbitrary ASimSetup where
-    arbitrary = do totXSec <- choose (0.01, 10.0) :: Gen FPFloat
-                   absXSec <- choose (0.001, totXSec) :: Gen FPFloat
-                   seed <- arbitrary :: Gen (Positive (Large Int))
-                   shots <- choose (1, 5) :: Gen Integer
-                   particleType <- elements [Photon, Neutron]
-                   sourcePosition <- arbitrary :: Gen (AVec3 FPFloat)
-                   sourceMomentum <- arbitrary
-                   return $ ASimSetup SimSetup { theXSec = CrossSection $ ConstantXS totXSec absXSec
-                                   , initialSeed = getLarge $ getPositive seed
-                                   , nShots = shots
-                                   , source = Source $ FactorizedSource particleType (PointwiseSpaceDistribution (Pos $ aVec sourcePosition)) (IsoMonoDistribution sourceMomentum)
-                                   , scores = []
-                                   }
+prop_nextStepAligned :: AParticle -> ASimSetup -> Property
+prop_nextStepAligned (AParticle p) (ASimSetup setup) =
+        mag (p^.pMomentumVec) > 0.0 ==>
+        initialMomentumUnitVec ~== displacementUnitVec
+        where stepPoint = fst $ runAnyProblem (nextStep p) setup
+              initialMomentumUnitVec = fromJust $ toUnitVector $ p^.pMomentumVec
+              (Pos finalPositionVec) = stepPoint^.stepPointVertex
+              initialPositionVec     = p^.pPositionVec
+              displacement           = finalPositionVec -: initialPositionVec
+              displacementUnitVec    = fromJust $ toUnitVector displacement
 
 prop_solveConverges :: AParticle -> ASimSetup -> Bool
 prop_solveConverges (AParticle p) (ASimSetup setup) = runAnyProblem (solve p) setup `seq` True

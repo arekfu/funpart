@@ -57,6 +57,7 @@ test-suite funpart-test
                      , ParticleTest
                      , MCTest
                      , ProblemTest
+                     , SimSetupTest
   build-depends:       base
                      , lens
                      , vector
