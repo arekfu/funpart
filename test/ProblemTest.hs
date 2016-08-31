@@ -25,13 +25,13 @@ prop_nextStepType (AParticle p) (ASimSetup setup) =
         case stepPoint^.stepPointType of
             SourceStepPoint -> False
             _               -> True
-        where stepPoint = fst $ runAnyProblem (nextStep p) setup
+        where stepPoint = fst $ runProblem (nextStep p) setup
 
 prop_nextStepAligned :: AParticle -> ASimSetup -> Property
 prop_nextStepAligned (AParticle p) (ASimSetup setup) =
         mag (p^.pMomentumVec) > 0.0 ==>
         initialMomentumUnitVec ~== displacementUnitVec
-        where stepPoint = fst $ runAnyProblem (nextStep p) setup
+        where stepPoint = fst $ runProblem (nextStep p) setup
               initialMomentumUnitVec = fromJust $ toUnitVector $ p^.pMomentumVec
               (Pos finalPositionVec) = stepPoint^.stepPointVertex
               initialPositionVec     = p^.pPositionVec
@@ -39,7 +39,7 @@ prop_nextStepAligned (AParticle p) (ASimSetup setup) =
               displacementUnitVec    = fromJust $ toUnitVector displacement
 
 prop_solveConverges :: AParticle -> ASimSetup -> Bool
-prop_solveConverges (AParticle p) (ASimSetup setup) = runAnyProblem (solve p) setup `seq` True
+prop_solveConverges (AParticle p) (ASimSetup setup) = runProblem (solve p) setup `seq` True
 
 return []
 runTests :: IO Bool

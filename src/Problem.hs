@@ -3,7 +3,7 @@
 module Problem
 ( Problem
 , runProblem
-, runAnyProblem
+, runSimulation
 , fixedSourceProblem
 ) where
 
@@ -19,16 +19,16 @@ import Track
 newtype Problem a = Problem { unProblem :: RWS SimSetup.SimSetup [Track] StdGen a }
                     deriving (Monad, MonadReader SimSetup.SimSetup, MonadState StdGen, MonadWriter [Track], Applicative, Functor)
 
-runAnyProblem :: Problem a -> SimSetup.SimSetup -> (a, [Track])
-runAnyProblem problem setup = result
+runProblem :: Problem a -> SimSetup.SimSetup -> (a, [Track])
+runProblem problem setup = result
     where seed = SimSetup.initialSeed setup
           initialGen = mkStdGen seed
           problem' = unProblem problem
           result = evalRWS problem' setup initialGen
 
-runProblem :: Problem () -> SimSetup.SimSetup -> [Score]
-runProblem problem setup = scores
-                           where tracks = snd $ runAnyProblem problem setup
+runSimulation :: Problem a -> SimSetup.SimSetup -> [Score]
+runSimulation problem setup = scores
+                           where tracks = snd $ runProblem problem setup
                                  emptyScores = SimSetup.scores setup
                                  scores = foldl' updateAllByTrack emptyScores tracks
 
