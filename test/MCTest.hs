@@ -27,7 +27,7 @@ instance (Arbitrary a, Ord a, Num a, Fractional a) => Arbitrary (PositiveVector 
 anyPositive :: (Ord a, Num a) => PositiveVector a -> Bool
 anyPositive (PositiveVector v) = V.any (>0) v
 
-fromVector :: (Ord a, Num a, Fractional a) => V.Vector a -> PositiveVector a
+fromVector :: Fractional a => V.Vector a -> PositiveVector a
 fromVector v = let tot = V.sum v
                 in PositiveVector $ fmap (/tot) v
 

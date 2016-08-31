@@ -66,7 +66,7 @@ mkScattering xsec p = StepPoint { _stepPointType = typ
                                                      , _outgoing = [p] }
 
 -- | Take one transport step.
-nextStep :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
+nextStep :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m)
          => Particle
          -> m StepPoint
 nextStep p = do dist <- distanceToCollision p

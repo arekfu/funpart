@@ -48,7 +48,7 @@ sampleExp :: (Random a, Floating a, MonadState StdGen m)
 sampleExp lambda = do xi <- uniform
                       return $ (-lambda) * log xi
 
-sampleV :: (Num a, Ord a, Fractional a, Random a)
+sampleV :: (Ord a, Fractional a)
         => V.Vector a
         -> a
         -> Maybe Int
@@ -57,7 +57,7 @@ sampleV v xi = do
     i <- V.findIndex (>xi) v'
     return $ i+1
 
-sampleUniformV :: (Num a, Ord a, Fractional a, Random a, MonadState StdGen m)
+sampleUniformV :: (Ord a, Fractional a, Random a, MonadState StdGen m)
         => V.Vector a
         -> m (Maybe Int)
 sampleUniformV v = do
