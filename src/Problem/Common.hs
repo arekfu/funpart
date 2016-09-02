@@ -49,6 +49,13 @@ doCollision p = do xSecs <- asks SimSetup.theXSec
                        else do p' <- sampleIsoScattering p
                                return $ mkScattering totXSec p'
 
+mkSource :: Particle -> StepPoint
+mkSource p = StepPoint { _stepPointType = SourceStepPoint
+                       , _stepPointVertex = p^.pPosition
+                       , _stepPointMomentum = p^.pMomentum
+                       , _stepPointWeight = p^.pWeight
+                       }
+
 mkAbsorption :: Particle -> StepPoint
 mkAbsorption p = StepPoint { _stepPointType = EndStepPoint
                            , _stepPointVertex = p^.pPosition
@@ -73,16 +80,23 @@ nextStep p = do dist <- distanceToCollision p
                 let p'   = fromJust $ push dist p   -- ugh, fromJust! FIXME
                 doCollision p'
 
+steps' :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
+      => [StepPoint]
+      -> Particle
+      -> m [StepPoint]
+steps' stepsSoFar p = do step <- nextStep p
+                         let typ  = step^.stepPointType
+                             newSteps = step : stepsSoFar
+                         case typ of
+                             EndStepPoint -> return newSteps
+                             SourceStepPoint -> steps' newSteps p
+                             CollisionStepPoint _ ps -> concat <$> mapM (steps' newSteps) ps
+
 steps :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
       => Particle
       -> m [StepPoint]
-steps p = do step <- nextStep p
-             let typ  = step^.stepPointType
-             case typ of
-                 EndStepPoint -> return [step]
-                 SourceStepPoint -> (:) <$> return step <*> steps p
-                 CollisionStepPoint _ ps -> (:) <$> return step <*> (concat <$> mapM steps ps)
-
+steps p = steps' [firstStep] p
+    where firstStep = mkSource p
 
 -- | Solve one transport history.
 solve :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)  -- ugh

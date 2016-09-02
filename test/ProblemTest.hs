@@ -38,6 +38,13 @@ prop_nextStepAligned (AParticle p) (ASimSetup setup) =
               displacement           = finalPositionVec -: initialPositionVec
               displacementUnitVec    = fromJust $ toUnitVector displacement
 
+prop_firstStepPointIsSource :: AParticle -> ASimSetup -> Property
+prop_firstStepPointIsSource (AParticle p) (ASimSetup setup) =
+        counterexample (show firstStep) $
+        mag (p^.pMomentumVec) > 0.0 ==>
+        firstStep^.stepPointType == SourceStepPoint
+        where firstStep = last $ fst $ runProblem (steps p) setup
+
 prop_solveConverges :: AParticle -> ASimSetup -> Bool
 prop_solveConverges (AParticle p) (ASimSetup setup) = runProblem (solve p) setup `seq` True
 
