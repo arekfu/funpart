@@ -17,7 +17,7 @@ import Core
 import VecSpace
 import Approx
 
-data Vec3 a = Vec3 a a a deriving Eq
+data Vec3 a = Vec3 !a !a !a deriving Eq
 
 type FPVec3 = Vec3 FPFloat
 

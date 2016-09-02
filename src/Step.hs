@@ -19,8 +19,8 @@ import Particle
 import CrossSection
 import Track
 
-data StepPointType = CollisionStepPoint { _stepCollisionXSec :: CrossSectionValue
-                                        , _outgoing          :: [Particle]
+data StepPointType = CollisionStepPoint { _stepCollisionXSec :: !CrossSectionValue
+                                        , _outgoing          :: ![Particle]
                                         }
                    | SourceStepPoint
                    | EndStepPoint
@@ -35,10 +35,10 @@ getOutgoing :: StepPoint -> [Particle]
 getOutgoing (StepPoint (CollisionStepPoint _ ps) _ _ _) = ps
 getOutgoing _ = []
 
-data StepPoint = StepPoint { _stepPointType     :: StepPointType
-                           , _stepPointVertex   :: Position
-                           , _stepPointMomentum :: Momentum
-                           , _stepPointWeight   :: Weight
+data StepPoint = StepPoint { _stepPointType     :: !StepPointType
+                           , _stepPointVertex   :: !Position
+                           , _stepPointMomentum :: !Momentum
+                           , _stepPointWeight   :: !Weight
                            } deriving (Show, Eq)
 
 toTrackPoint :: StepPoint -> TrackPoint

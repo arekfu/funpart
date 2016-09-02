@@ -17,16 +17,16 @@ import Control.Lens (makeLenses)
 import Particle
 import CrossSection
 
-data TrackPointType = CollisionPoint { _collisionXSec :: CrossSectionValue
+data TrackPointType = CollisionPoint { _collisionXSec :: !CrossSectionValue
                                      }
                     | SourcePoint
                     | EndPoint
                     deriving (Show, Eq)
 
-data TrackPoint = TrackPoint { _pointType     :: TrackPointType
-                             , _pointVertex   :: Position
-                             , _pointMomentum :: Momentum
-                             , _pointWeight   :: Weight
+data TrackPoint = TrackPoint { _pointType     :: !TrackPointType
+                             , _pointVertex   :: !Position
+                             , _pointMomentum :: !Momentum
+                             , _pointWeight   :: !Weight
                              } deriving (Show, Eq)
 
 newtype Track = Track { _trackPoints :: [TrackPoint] } deriving (Show, Eq)

@@ -39,6 +39,14 @@ library
                      , safe
   ghc-options:         -Wall
   default-language:    Haskell2010
+  default-extensions:  BangPatterns
+  other-extensions:    TemplateHaskell
+                     , GADTs
+                     , FlexibleContexts
+                     , GeneralizedNewtypeDeriving
+                     , MultiParamTypeClasses
+                     , FlexibleInstances
+                     , FunctionalDependencies
 
 executable funpart
   hs-source-dirs:      app

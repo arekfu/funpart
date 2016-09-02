@@ -44,13 +44,13 @@ data ParticleType = Neutron
 
 type Weight = FPFloat
 
-data DynParticle = DP { _position :: Position
-                      , _momentum :: Momentum
-                      , _weight   :: Weight
+data DynParticle = DP { _position :: !Position
+                      , _momentum :: !Momentum
+                      , _weight   :: !Weight
                       } deriving (Show, Eq)
 
-data Particle = P { _ptype   :: ParticleType
-                  , _dynPart :: DynParticle
+data Particle = P { _ptype   :: !ParticleType
+                  , _dynPart :: !DynParticle
                   } deriving (Show, Eq)
 
 makeLenses ''Position
