@@ -56,6 +56,13 @@ prop_solveFromSource (AParticle p) (ASimSetup setup) =
         firstTrackPointIsSource track
         where track = fst $ fst $ runProblem (solve p) setup
 
+prop_solveAllFromSource :: AParticle -> ASimSetup -> Property
+prop_solveAllFromSource (AParticle p) (ASimSetup setup) =
+        counterexample (show tracks) $
+        mag (p^.pMomentumVec) > 0.0 ==>
+        all firstTrackPointIsSource tracks
+        where tracks = snd $ runProblem (solve p) setup
+
 return []
 runTests :: IO Bool
 runTests = $quickCheckAll
