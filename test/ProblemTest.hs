@@ -16,6 +16,7 @@ import Step
 import Particle
 import Problem
 import Problem.Common
+import Track
 import Vec
 
 prop_nextStepType :: AParticle -> ASimSetup -> Property
@@ -45,8 +46,15 @@ prop_firstStepPointIsSource (AParticle p) (ASimSetup setup) =
         firstStep^.stepPointType == SourceStepPoint
         where firstStep = last $ fst $ runProblem (steps p) setup
 
-prop_solveConverges :: AParticle -> ASimSetup -> Bool
-prop_solveConverges (AParticle p) (ASimSetup setup) = runProblem (solve p) setup `seq` True
+firstTrackPointIsSource :: Track -> Bool
+firstTrackPointIsSource track = last (track^.trackPoints) ^. pointType == SourcePoint
+
+prop_solveFromSource :: AParticle -> ASimSetup -> Property
+prop_solveFromSource (AParticle p) (ASimSetup setup) =
+        counterexample (show track) $
+        mag (p^.pMomentumVec) > 0.0 ==>
+        firstTrackPointIsSource track
+        where track = fst $ fst $ runProblem (solve p) setup
 
 return []
 runTests :: IO Bool
