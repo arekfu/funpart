@@ -28,7 +28,6 @@ library
                      , Problem
                      , Problem.Common
                      , Score
-                     , Step
                      , Source
                      , Source.Distributions
   build-depends:       base < 5

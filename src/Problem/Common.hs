@@ -4,13 +4,14 @@ module Problem.Common
 ( runHistory
 , nextStep
 , steps
+, stepsFromSource
+, stepsFromSecondary
 , solve
 , solveAll
 ) where
 
 import Control.Monad.RWS.Strict
 import System.Random (StdGen)
-import Data.Foldable (foldl')
 import Control.Lens
 import Data.Maybe (fromJust)
 
@@ -18,7 +19,6 @@ import qualified SimSetup
 import CrossSection (getAbsXS, getTotXS, CrossSectionValue)
 import Particle
 import Track
-import Step
 import Source
 import MC (uniform, sampleExp, sampleIsoVec)
 import VecSpace (mag)
@@ -36,9 +36,9 @@ sampleIsoScattering :: MonadState StdGen m
 sampleIsoScattering p = do mom' <- sampleIsoVec $ mag $ p^.pMomentumVec
                            return $ set pMomentum (Mom mom') p
 
-doCollision :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m)
+doCollision :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
             => Particle
-            -> m StepPoint
+            -> m TrackPoint
 doCollision p = do xSecs <- asks SimSetup.theXSec
                    let totXSec = getTotXS xSecs p
                        absXSec = getAbsXS xSecs p
@@ -46,76 +46,95 @@ doCollision p = do xSecs <- asks SimSetup.theXSec
                    xi <- uniform
                    if xi <= ratio
                        then return $ mkAbsorption p
-                       else do p' <- sampleIsoScattering p
-                               return $ mkScattering totXSec p'
+                       else doScattering totXSec p
 
-mkSource :: Particle -> StepPoint
-mkSource p = StepPoint { _stepPointType = SourceStepPoint
-                       , _stepPointVertex = p^.pPosition
-                       , _stepPointMomentum = p^.pMomentum
-                       , _stepPointWeight = p^.pWeight
-                       }
+mkSource :: Particle -> TrackPoint
+mkSource p = TrackPoint { _pointType = SourcePoint
+                        , _pointVertex = p^.pPosition
+                        , _pointMomentum = p^.pMomentum
+                        , _pointWeight = p^.pWeight
+                        }
 
-mkAbsorption :: Particle -> StepPoint
-mkAbsorption p = StepPoint { _stepPointType = EndStepPoint
-                           , _stepPointVertex = p^.pPosition
-                           , _stepPointMomentum = p^.pMomentum
-                           , _stepPointWeight = p^.pWeight
+mkSecondary :: Particle -> TrackPoint
+mkSecondary p = TrackPoint { _pointType = SecondaryPoint
+                           , _pointVertex = p^.pPosition
+                           , _pointMomentum = p^.pMomentum
+                           , _pointWeight = p^.pWeight
                            }
 
-mkScattering :: CrossSectionValue -> Particle -> StepPoint
-mkScattering xsec p = StepPoint { _stepPointType = typ
-                                 , _stepPointVertex = p^.pPosition
-                                 , _stepPointMomentum = p^.pMomentum
-                                 , _stepPointWeight = p^.pWeight
-                                 }
-                      where typ = CollisionStepPoint { _stepCollisionXSec = xsec
-                                                     , _outgoing = [p] }
+mkAbsorption :: Particle -> TrackPoint
+mkAbsorption p = TrackPoint { _pointType = EndPoint
+                            , _pointVertex = p^.pPosition
+                            , _pointMomentum = p^.pMomentum
+                            , _pointWeight = p^.pWeight
+                            }
+
+doScattering :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
+             => CrossSectionValue -> Particle -> m TrackPoint
+doScattering xsec p = do p' <- sampleIsoScattering p
+                         secs <- stepsFromSecondary p'
+                         let point = CollisionPoint { _collisionXSec = xsec
+                                                    , _secondaries = [Track secs] }
+                         return TrackPoint { _pointType = point
+                                           , _pointVertex = p^.pPosition
+                                           , _pointMomentum = p^.pMomentum
+                                           , _pointWeight = p^.pWeight
+                                           }
 
 -- | Take one transport step.
-nextStep :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m)
+nextStep :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
          => Particle
-         -> m StepPoint
+         -> m TrackPoint
 nextStep p = do dist <- distanceToCollision p
                 let p'   = fromJust $ push dist p   -- ugh, fromJust! FIXME
                 doCollision p'
 
-steps' :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
-      => [StepPoint]
-      -> Particle
-      -> m [StepPoint]
-steps' stepsSoFar p = do step <- nextStep p
-                         let typ  = step^.stepPointType
-                             newSteps = step : stepsSoFar
-                         case typ of
-                             EndStepPoint -> return newSteps
-                             SourceStepPoint -> steps' newSteps p
-                             CollisionStepPoint _ ps -> concat <$> mapM (steps' newSteps) ps
-
 steps :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
-      => Particle
-      -> m [StepPoint]
-steps p = steps' [firstStep] p
-    where firstStep = mkSource p
+      => [TrackPoint]
+      -> Particle
+      -> m [TrackPoint]
+steps stepsSoFar p = do next <- nextStep p
+                        let typ      = next^.pointType
+                            newSteps = next : stepsSoFar
+                        case typ of
+                            EndPoint           -> return newSteps
+                            CollisionPoint _ _ -> return newSteps
+                            SourcePoint        -> error "SourceStepPoint generated along a track"
+                            SecondaryPoint     -> error "SecondaryStepPoint generated along a track"
+
+stepsFromSource :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
+                => Particle
+                -> m [TrackPoint]
+stepsFromSource = stepsFrom mkSource
+
+
+stepsFromSecondary :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
+                   => Particle
+                   -> m [TrackPoint]
+stepsFromSecondary = stepsFrom mkSecondary
+
+stepsFrom :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
+          => (Particle -> TrackPoint)
+          -> Particle
+          -> m [TrackPoint]
+stepsFrom maker p = steps [firstStep] p
+    where firstStep = maker p
+
 
 -- | Solve one transport history.
 solve :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)  -- ugh
-         => Particle                -- ^ The particle to transport
-         -> m (Track, [Particle])   -- ^ The list of tracks and the list of secondaries
-solve p = do stepPoints <- steps p
-             let tps = map toTrackPoint stepPoints
-                 particles = foldl' (\acc pp -> acc ++ getOutgoing pp) [] stepPoints
-              in return (Track tps, particles)
+         => Particle    -- ^ The particle to transport
+         -> m Track     -- ^ The list of tracks and the list of secondaries
+solve p = Track <$> stepsFromSource p
 
 -- | Completely solve one transport history.
 solveAll :: (MonadReader SimSetup.SimSetup m, MonadState StdGen m, MonadWriter [Track] m)
          => [Particle]  -- ^ The particles to transport
          -> m ()        -- ^ The tracks generated by the particles
 solveAll [] = return ()
-solveAll (p:ps) = do (track, secs) <- solve p
+solveAll (p:ps) = do track <- solve p
                      tell [track]
-                     let ps' = secs ++ ps
-                     solveAll ps'
+                     solveAll ps
 
 runHistory :: (MonadReader SimSetup.SimSetup m, MonadState StdGen m, MonadWriter [Track] m) => m ()
 runHistory = do

@@ -26,5 +26,5 @@ setup = SimSetup { theXSec = xSec
               aSource = Source $ FactorizedSource Neutron (PointwiseSpaceDistribution (Pos zero)) (IsoMonoDistribution 1)
 
 main :: IO ()
-main = forM_ tracks $ \track -> print $ length $ _trackPoints track
+main = forM_ tracks $ \track -> print (Track $ reverse $ _trackPoints track)
     where tracks = snd $ runProblem fixedSourceProblem setup
