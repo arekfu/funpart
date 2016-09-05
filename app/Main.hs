@@ -8,7 +8,6 @@ import CrossSection
 import Particle
 import Source
 import Source.Distributions
-import Track
 import Vec
 
 setup :: SimSetup
@@ -26,5 +25,5 @@ setup = SimSetup { theXSec = xSec
               aSource = Source $ FactorizedSource Neutron (PointwiseSpaceDistribution (Pos zero)) (IsoMonoDistribution 1)
 
 main :: IO ()
-main = forM_ tracks $ \track -> print (Track $ reverse $ _trackPoints track)
+main = forM_ tracks $ \track -> print track
     where tracks = snd $ runProblem fixedSourceProblem setup

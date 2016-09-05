@@ -15,6 +15,7 @@ module Track
 ) where
 
 import Control.Lens (makeLenses)
+import Data.Sequence (Seq)
 
 import Particle
 import CrossSection
@@ -33,7 +34,7 @@ data TrackPoint = TrackPoint { _pointType     :: !TrackPointType
                              , _pointWeight   :: !Weight
                              } deriving (Show, Eq)
 
-newtype Track = Track { _trackPoints :: [TrackPoint] } deriving (Show, Eq)
+newtype Track = Track { _trackPoints :: Seq TrackPoint } deriving (Show, Eq)
 
 makeLenses ''TrackPointType
 makeLenses ''TrackPoint

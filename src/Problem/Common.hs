@@ -14,6 +14,7 @@ import Control.Monad.RWS.Strict
 import System.Random (StdGen)
 import Control.Lens
 import Data.Maybe (fromJust)
+import Data.Sequence (Seq, singleton)
 
 import qualified SimSetup
 import CrossSection (getAbsXS, getTotXS, CrossSectionValue)
@@ -90,12 +91,12 @@ nextStep p = do dist <- distanceToCollision p
                 doCollision p'
 
 steps :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
-      => [TrackPoint]
+      => Seq TrackPoint
       -> Particle
-      -> m [TrackPoint]
+      -> m (Seq TrackPoint)
 steps stepsSoFar p = do next <- nextStep p
                         let typ      = next^.pointType
-                            newSteps = next : stepsSoFar
+                            newSteps = stepsSoFar |> next
                         case typ of
                             EndPoint           -> return newSteps
                             CollisionPoint _ _ -> return newSteps
@@ -104,20 +105,20 @@ steps stepsSoFar p = do next <- nextStep p
 
 stepsFromSource :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
                 => Particle
-                -> m [TrackPoint]
+                -> m (Seq TrackPoint)
 stepsFromSource = stepsFrom mkSource
 
 
 stepsFromSecondary :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
                    => Particle
-                   -> m [TrackPoint]
+                   -> m (Seq TrackPoint)
 stepsFromSecondary = stepsFrom mkSecondary
 
 stepsFrom :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
           => (Particle -> TrackPoint)
           -> Particle
-          -> m [TrackPoint]
-stepsFrom maker p = steps [firstStep] p
+          -> m (Seq TrackPoint)
+stepsFrom maker p = steps (singleton firstStep) p
     where firstStep = maker p
 
 

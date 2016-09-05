@@ -5,8 +5,9 @@ module ProblemTest
 ) where
 
 import Test.QuickCheck
-import Control.Lens
+import Control.Lens ((^.))
 import Data.Maybe (fromJust)
+import Data.Sequence (Seq, viewl, ViewL(..))
 
 import ParticleTest hiding (runTests)
 import SimSetupTest
@@ -38,16 +39,18 @@ prop_nextStepAligned (AParticle p) (ASimSetup setup) =
               displacement           = finalPositionVec -: initialPositionVec
               displacementUnitVec    = fromJust $ toUnitVector displacement
 
-firstStepPointIs :: (Particle -> Problem [TrackPoint])
-                 -> TrackPointType
-                 -> AParticle
-                 -> ASimSetup
+firstStepPointIs :: (Particle -> Problem (Seq TrackPoint))  -- ^ The function that generates the sequence of TrackPoints.
+                 -> TrackPointType                          -- ^ The expected TrackPointType for the first point.
+                 -> AParticle                               -- ^ The particle to simulate.
+                 -> ASimSetup                               -- ^ The simulation setup
                  -> Property
-firstStepPointIs stepper aPointType (AParticle p) (ASimSetup setup) =
-        counterexample (show firstStep) $
+firstStepPointIs stepper expected (AParticle p) (ASimSetup setup) =
+        counterexample (show firstPoint) $
         mag (p^.pMomentumVec) > 0.0 ==>
-        firstStep^.pointType == aPointType
-        where firstStep = last $ fst $ runProblem (stepper p) setup
+        case firstPoint of
+            point :< _ -> point^.pointType == expected
+            EmptyL     -> False
+        where firstPoint = viewl $ fst $ runProblem (stepper p) setup
 
 prop_firstStepPointIsSource :: AParticle -> ASimSetup -> Property
 prop_firstStepPointIsSource = firstStepPointIs stepsFromSource SourcePoint
@@ -56,7 +59,10 @@ prop_firstStepPointIsSecondary :: AParticle -> ASimSetup -> Property
 prop_firstStepPointIsSecondary = firstStepPointIs stepsFromSecondary SecondaryPoint
 
 firstTrackPointIsSource :: Track -> Bool
-firstTrackPointIsSource track = last (track^.trackPoints) ^. pointType == SourcePoint
+firstTrackPointIsSource track = case firstPoint of
+    point :< _ -> point^.pointType == SourcePoint
+    EmptyL     -> False
+    where firstPoint = viewl $ track^.trackPoints
 
 prop_solveFromSource :: AParticle -> ASimSetup -> Property
 prop_solveFromSource (AParticle p) (ASimSetup setup) =
