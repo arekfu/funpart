@@ -47,7 +47,7 @@ doCollision p = do xSecs <- asks SimSetup.theXSec
                    xi <- uniform
                    if xi <= ratio
                        then return $ mkAbsorption p
-                       else doScattering totXSec p
+                       else doElasticScattering totXSec p
 
 mkSource :: Particle -> TrackPoint
 mkSource p = TrackPoint { _pointType = SourcePoint
@@ -64,23 +64,40 @@ mkSecondary p = TrackPoint { _pointType = SecondaryPoint
                            }
 
 mkAbsorption :: Particle -> TrackPoint
-mkAbsorption p = TrackPoint { _pointType = EndPoint
+mkAbsorption p = TrackPoint { _pointType = Absorption
                             , _pointVertex = p^.pPosition
                             , _pointMomentum = p^.pMomentum
                             , _pointWeight = p^.pWeight
                             }
 
-doScattering :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
-             => CrossSectionValue -> Particle -> m TrackPoint
-doScattering xsec p = do p' <- sampleIsoScattering p
-                         secs <- stepsFromSecondary p'
-                         let point = CollisionPoint { _collisionXSec = xsec
-                                                    , _secondaries = [Track secs] }
-                         return TrackPoint { _pointType = point
-                                           , _pointVertex = p^.pPosition
-                                           , _pointMomentum = p^.pMomentum
-                                           , _pointWeight = p^.pWeight
-                                           }
+doElasticScattering :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
+                      => CrossSectionValue -> Particle -> m TrackPoint
+doElasticScattering xsec p =
+    do p' <- sampleIsoScattering p
+       let point = CollisionPoint { _collisionXSec = xsec
+                                  , _collision = Elastic p'
+                                  }
+       return TrackPoint { _pointType = point
+                         , _pointVertex = p^.pPosition
+                         , _pointMomentum = p^.pMomentum
+                         , _pointWeight = p^.pWeight
+                         }
+
+{-
+doInelasticScattering :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m) 
+                      => CrossSectionValue -> Particle -> m TrackPoint
+doInelasticScattering xsec p =
+    do p' <- sampleIsoScattering p
+       rest <- stepsFromSecondary p'
+       let point = CollisionPoint { _collisionXSec = xsec
+                                  , _collision = Inelastic [Track rest]
+                                  }
+       return TrackPoint { _pointType = point
+                         , _pointVertex = p^.pPosition
+                         , _pointMomentum = p^.pMomentum    -- FIXME: reduce the particle energy
+                         , _pointWeight = p^.pWeight
+                         }
+-}
 
 -- | Take one transport step.
 nextStep :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
@@ -98,10 +115,12 @@ steps stepsSoFar p = do next <- nextStep p
                         let typ      = next^.pointType
                             newSteps = stepsSoFar |> next
                         case typ of
-                            EndPoint           -> return newSteps
-                            CollisionPoint _ _ -> return newSteps
-                            SourcePoint        -> error "SourceStepPoint generated along a track"
-                            SecondaryPoint     -> error "SecondaryStepPoint generated along a track"
+                            Absorption            -> return newSteps
+                            CollisionPoint _ coll -> case coll of
+                                Inelastic _       -> return newSteps
+                                Elastic p'        -> steps newSteps p'
+                            SourcePoint           -> error "SourceStepPoint generated along a track"
+                            SecondaryPoint        -> error "SecondaryStepPoint generated along a track"
 
 stepsFromSource :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m, MonadWriter [Track] m)
                 => Particle

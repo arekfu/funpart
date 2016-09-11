@@ -2,9 +2,12 @@
 --{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Track
-( TrackPointType(..)
-, collisionXSec
+( Collision(..)
+, primary
 , secondaries
+, TrackPointType(..)
+, collisionXSec
+, collision
 , TrackPoint(..)
 , pointType
 , pointVertex
@@ -20,12 +23,16 @@ import Data.Sequence (Seq)
 import Particle
 import CrossSection
 
+data Collision = Elastic { _primary :: !Particle }
+               | Inelastic { _secondaries :: ![Track] }
+               deriving (Show, Eq)
+
 data TrackPointType = CollisionPoint { _collisionXSec :: !CrossSectionValue
-                                     , _secondaries :: ![Track]
+                                     , _collision :: !Collision
                                      }
                     | SourcePoint
                     | SecondaryPoint
-                    | EndPoint
+                    | Absorption
                     deriving (Show, Eq)
 
 data TrackPoint = TrackPoint { _pointType     :: !TrackPointType
@@ -36,6 +43,7 @@ data TrackPoint = TrackPoint { _pointType     :: !TrackPointType
 
 newtype Track = Track { _trackPoints :: Seq TrackPoint } deriving (Show, Eq)
 
+makeLenses ''Collision
 makeLenses ''TrackPointType
 makeLenses ''TrackPoint
 makeLenses ''Track
