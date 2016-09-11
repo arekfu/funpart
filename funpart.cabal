@@ -54,6 +54,7 @@ executable funpart
   build-depends:       base
                      , funpart
                      , random
+                     , containers
   default-language:    Haskell2010
 
 test-suite funpart-test
