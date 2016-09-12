@@ -21,7 +21,7 @@ setup = SimSetup { theXSec = xSec
                  }
         where xSec = CrossSection $ ConstantXS totXSec absXSec
               totXSec = 1.0
-              absXSec = 0.9
+              absXSec = 0.1
               seed = 123456
               shots = 1000
               aSource = Source $ FactorizedSource Neutron (PointwiseSpaceDistribution (Pos zero)) (IsoMonoDistribution 1)
@@ -34,5 +34,12 @@ average l = tot / fromIntegral n
 main :: IO ()
 --main = forM_ tracks $ \track -> print $ S.length $ _trackPoints track
 --    where tracks = snd $ runProblem fixedSourceProblem setup
-main = print ((average $ map (fromIntegral . S.length . _trackPoints) tracks) :: Double)
-    where tracks = snd $ runProblem fixedSourceProblem setup
+main = do print ((average $ map (fromIntegral . S.length . _trackPoints) tracks) :: Double)
+          print expectedNPoints
+    where tracks          = snd $ runProblem fixedSourceProblem setup
+          dummyDP         = mkDynParticle (Pos zero) (Mom $ cart 0 0 1)
+          theXS           = theXSec setup
+          absXS           = getAbsXS theXS dummyDP
+          totXS           = getTotXS theXS dummyDP
+          pAbs            = absXS/totXS
+          expectedNPoints = 1 + 1/pAbs
