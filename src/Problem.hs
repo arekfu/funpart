@@ -7,7 +7,7 @@ module Problem
 , fixedSourceProblem
 ) where
 
-import Control.Monad.RWS (RWS, evalRWS, asks, forM_, MonadReader, MonadState, MonadWriter)
+import Control.Monad.RWS (RWS, evalRWS, asks, replicateM_, MonadReader, MonadState, MonadWriter)
 import System.Random (mkStdGen, StdGen)
 import Data.Foldable (foldl')
 
@@ -36,5 +36,5 @@ fixedSourceProblem :: (MonadReader SimSetup.SimSetup m, MonadState StdGen m, Mon
                    => m ()
 fixedSourceProblem = do
     nShots <- asks SimSetup.nShots
-    forM_ [1..nShots] $ const runHistory
+    replicateM_ nShots runHistory
     return ()

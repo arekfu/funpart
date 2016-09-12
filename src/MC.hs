@@ -36,7 +36,7 @@ uniform = do
 uniforms :: (Random a, Fractional a, MonadState StdGen m)
          => Int
          -> m [a]
-uniforms n = forM [1..n] $ const uniform
+uniforms n = replicateM n uniform
 
 -- | Sample from an exponential distribution of the form
 -- @

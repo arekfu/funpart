@@ -18,7 +18,7 @@ instance Arbitrary ASimSetup where
     arbitrary = do totXSec <- choose (0.01, 10.0) :: Gen FPFloat
                    absXSec <- choose (0.001, totXSec) :: Gen FPFloat
                    seed <- arbitrary :: Gen (Positive (Large Int))
-                   shots <- choose (1, 5) :: Gen Integer
+                   shots <- choose (1, 5) :: Gen Int
                    particleType <- elements [Photon, Neutron]
                    sourcePosition <- arbitrary :: Gen (AVec3 FPFloat)
                    sourceMomentum <- arbitrary

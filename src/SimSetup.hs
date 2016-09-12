@@ -10,7 +10,7 @@ import MC (Seed)
 data SimSetup =
     SimSetup { theXSec     :: CrossSection
              , initialSeed :: Seed
-             , nShots      :: Integer
+             , nShots      :: Int
              , source      :: Source
              , scores      :: [Score]
              }
