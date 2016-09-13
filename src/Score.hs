@@ -6,10 +6,13 @@ module Score (
 -- * Types
 , Score(..)
 , CollFlux(..)
+, TrackLength(..)
 , ScoreValue
 -- * Functions
 , collFluxValue
 , initCollFluxScore
+, trackLengthValue
+, initTrackLengthScore
 , updateAllByTrackPoint
 , updateAllByTrack
 , updateAllByTracks
@@ -69,6 +72,8 @@ data Score where
 -- | Trivial ScoreLike instance for Score objects.
 instance ScoreLike Score where
     updateByTrackPoint (Score s) p = Score $ updateByTrackPoint s p
+    updateByTrack (Score s) p = Score $ updateByTrack s p
+    updateByTracks (Score s) p = Score $ updateByTracks s p
     display (Score s) = display s
 
 -- | A collision-based flux score
@@ -89,3 +94,28 @@ instance ScoreLike CollFlux where
 -- | Generate an empty collision flux.
 initCollFluxScore :: CollFlux
 initCollFluxScore = CollFlux empty
+
+
+
+-- | A track-length score.
+newtype TrackLength = TrackLength { _trackLengthValue :: ScoreValue }
+    deriving (Show, Eq)
+
+-- make all the necessary lenses
+makeLenses ''TrackLength
+
+-- | The track-length score is incremented by the track length.
+instance ScoreLike TrackLength where
+    updateByTrackPoint = undefined
+    updateByTrack score track =  over trackLengthValue (`tally` len) score
+        where len = fromIntegral . length $ track^.trackPoints
+    display score = "track length: " ++ meanString ++ " +- " ++ rmsString
+        where sv = score^.trackLengthValue
+              meanString = show $ mean sv
+              rmsString = case rms sv of
+                Nothing -> "NaN"
+                Just r  -> show r
+
+-- | Generate an empty track-length score.
+initTrackLengthScore :: TrackLength
+initTrackLengthScore = TrackLength empty

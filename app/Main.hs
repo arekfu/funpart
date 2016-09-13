@@ -1,15 +1,14 @@
 module Main where
 
-import qualified Data.Sequence as S
 import Data.List (foldl')
 
 import SimSetup
 import Problem
 import CrossSection
 import Particle
+import Score
 import Source
 import Source.Distributions
-import Track
 import Vec
 
 setup :: SimSetup
@@ -17,7 +16,7 @@ setup = SimSetup { theXSec = xSec
                  , initialSeed = seed
                  , nShots = shots
                  , source = aSource
-                 , scores = []
+                 , scores = [Score initTrackLengthScore]
                  }
         where xSec = CrossSection $ ConstantXS totXSec absXSec
               totXSec = 1.0
@@ -32,11 +31,23 @@ average l = tot / fromIntegral n
           acc (x, m) y = (x+y, m+1)
 
 main :: IO ()
+
 --main = forM_ tracks $ \track -> print $ S.length $ _trackPoints track
 --    where tracks = snd $ runProblem fixedSourceProblem setup
-main = do print ((average $ map (fromIntegral . S.length . _trackPoints) tracks) :: Double)
+
+--main = do print ((average $ map (fromIntegral . S.length . _trackPoints) tracks) :: Double)
+--          print expectedNPoints
+--    where tracks          = snd $ runProblem fixedSourceProblem setup
+--          dummyDP         = mkDynParticle (Pos zero) (Mom $ cart 0 0 1)
+--          theXS           = theXSec setup
+--          absXS           = getAbsXS theXS dummyDP
+--          totXS           = getTotXS theXS dummyDP
+--          pAbs            = absXS/totXS
+--          expectedNPoints = 1 + 1/pAbs
+
+main = do print $ display score
           print expectedNPoints
-    where tracks          = snd $ runProblem fixedSourceProblem setup
+    where score           = head $ runSimulation fixedSourceProblem setup
           dummyDP         = mkDynParticle (Pos zero) (Mom $ cart 0 0 1)
           theXS           = theXSec setup
           absXS           = getAbsXS theXS dummyDP
