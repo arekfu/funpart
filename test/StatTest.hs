@@ -6,7 +6,7 @@ module StatTest
 
 import Test.QuickCheck
 import Data.Foldable (foldl')
-import Data.Maybe (fromJust)
+import Data.Maybe (isNothing, fromJust)
 
 import Approx
 import Stat
@@ -15,18 +15,41 @@ naiveMean :: [Double] -> Double
 naiveMean l = sum l / fromIntegral (length l)
 
 prop_meanCorrect :: [Double] -> Property
-prop_meanCorrect l = not (null l) ==> svarMean ~== naiveMean l
-    where svarMean = mean $ foldl' tally empty l
+prop_meanCorrect l = not (null l) ==> sVarMean ~== naiveMean l
+    where sVarMean = mean $ foldl' tally empty l
 
 prop_rmsCorrect :: [Double] -> Property
 prop_rmsCorrect l =
-    counterexample (show (rms svar) ++ "; " ++ show naiveRMS ++ "\n" ++ show svar ++ "\n" ++ show residues) $
-    length l > 1 ==> fromJust (rms svar) ~== naiveRMS
-    where svar = foldl' tally empty l
+    counterexample (show (rms sVar) ++ "; " ++ show naiveRMS ++ "\n" ++ show sVar ++ "\n" ++ show residues) $
+    if length l > 1
+    then fromJust (rms sVar) ~== naiveRMS
+    else isNothing $ rms sVar
+    where sVar = foldl' tally empty l
           xbar = naiveMean l
           residues = map (\x -> (x-xbar)^(2::Int)) l
           len = fromIntegral (length l)
           naiveRMS = sqrt $ naiveMean residues / (len - 1)
+
+flatten :: [(Double, Positive Int)] -> [Double]
+flatten = concatMap (\(x,Positive n) -> replicate n x)
+
+flattenSVar :: [(Double, Positive Int)] -> SVar Double
+flattenSVar l = foldl' tally empty $ flatten l
+
+prop_weightedMeanCorrect :: [(Double, Positive Int)] -> Property
+prop_weightedMeanCorrect l =
+    not (null l) ==> mean sVar ~== mean flatSVar
+    where flatSVar = flattenSVar l
+          sVar = foldl' (\sv (x, Positive n) -> tallyW sv x (fromIntegral n)) empty l
+
+--prop_weightedRMSCorrect :: [(Double, Positive Int)] -> Property
+--prop_weightedRMSCorrect l =
+--    counterexample (show (rms sVar) ++ "; " ++ show (rms flatSVar) ++ "\n" ++ show sVar ++ "\n" ++ show flatSVar) $
+--    if length l > 1
+--    then fromJust (rms sVar) ~== fromJust (rms flatSVar)
+--    else isNothing $ rms sVar
+--    where flatSVar = flattenSVar l
+--          sVar = foldl' (\sv (x, Positive n) -> tallyW sv x (fromIntegral n)) empty l
 
 return []
 runTests :: IO Bool

@@ -11,42 +11,45 @@ module Stat
 
 data SVar a = SVar !a   -- ^ Sum of values.
                    !a   -- ^ Sum of squares of the values.
-                   !a   -- ^ Total weight.
-                   !Int -- ^ Total number of scores.
+                   !a   -- ^ Sum of the weights.
+                   !a   -- ^ Sum of the squares of the weights.
 
 instance Show a => Show (SVar a) where
-    show (SVar s s2 w n) = show (s, s2, w, n)
+    show (SVar s s2 w w2) = show (s, s2, w, w2)
 
 instance Eq a => Eq (SVar a) where
-    (SVar s s2 w n) == (SVar s' s2' w' n') =
-        s==s' && s2==s2' && w==w' && n==n'
+    (SVar s s2 w w2) == (SVar s' s2' w' w2') =
+        s==s' && s2==s2' && w==w' && w2==w2'
 
 
+-- | Generate an empty SVar.
 empty :: Num a => SVar a
 empty = SVar 0 0 0 0
 
+-- | Tally a value with unit weight.
 tally :: Num a => SVar a -> a -> SVar a
-tally sv = tallyW sv 1
+tally sv x = tallyW sv x 1
 
+-- | Tally a value with a given weight.
 tallyW :: Num a => SVar a   -- ^ Initial value of the SVar.
-                -> a        -- ^ Weight of the new value.
-                -> a        -- ^ The new value.
+                -> a        -- ^ The value to tally.
+                -> a        -- ^ The weight of the value to tally.
                 -> SVar a   -- ^ The updated SVar.
-tallyW (SVar s s2 w n) w' x = SVar (s+w'*x) (s2 + (w'*x)^(2::Int)) (w+w') (n+1)
+tallyW (SVar s s2 w w2) x wt = SVar (s+wt*x) (s2 + wt*x^(2::Int)) (w+wt) (w2+wt^(2::Int))
 
 mean :: Fractional a => SVar a -> a
-mean (SVar s _ _ n) = s/fromIntegral n
+mean (SVar s _ w _) = s/w
 
-variance :: Fractional a => SVar a -> Maybe a
-variance (SVar s s2  _ n) 
-    | n>1 = Just $ (s2-s^(2::Int)/n')/((n'-1)*n')
-    | otherwise = Nothing
-    where n' = fromIntegral n
+variance :: (Ord a, Fractional a) => SVar a -> Maybe a
+variance (SVar s s2 w w2) = if den <=0
+                            then Nothing
+                            else Just $ w2*(s2*w-s^(2::Int))/(den*w^(2::Int))
+    where den = w^(2::Int)-w2
 
-rms :: Floating a => SVar a -> Maybe a
+rms :: (Ord a, Floating a) => SVar a -> Maybe a
 rms = fmap sqrt . variance
 
-sigmasFrom :: Floating a
+sigmasFrom :: (Ord a, Floating a)
            => SVar a    -- ^ An SVar to test.
            -> a         -- ^ The value to compare to.
            -> Maybe a   -- ^ The discrepancy, in units of standard deviations.
