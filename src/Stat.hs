@@ -1,11 +1,12 @@
 module Stat
-( empty
+( SVar
+, empty
 , score
 , scoreW
 , mean
 , variance
 , rms
-, SVar
+, sigmasFrom
 ) where
 
 data SVar a = SVar !a   -- ^ Sum of values.
@@ -39,3 +40,9 @@ variance (SVar s s2  _ n)
 
 rms :: Floating a => SVar a -> Maybe a
 rms = fmap sqrt . variance
+
+sigmasFrom :: Floating a
+           => SVar a    -- ^ An SVar to test.
+           -> a         -- ^ The value to compare to.
+           -> Maybe a   -- ^ The discrepancy, in units of standard deviations.
+sigmasFrom sv ref = (\d -> (mean sv - ref) / d) <$> rms sv
