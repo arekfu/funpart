@@ -9,7 +9,6 @@ module Problem
 
 import Control.Monad.RWS (RWS, evalRWS, asks, replicateM_, MonadReader, MonadState, MonadWriter)
 import System.Random (mkStdGen, StdGen)
-import Data.Foldable (foldl')
 
 import qualified SimSetup
 import Problem.Common
@@ -30,7 +29,7 @@ runSimulation :: Problem a -> SimSetup.SimSetup -> [Score]
 runSimulation problem setup = scores
                            where tracks = snd $ runProblem problem setup
                                  emptyScores = SimSetup.scores setup
-                                 scores = foldl' updateAllByTrack emptyScores tracks
+                                 scores = updateAllByTracks emptyScores tracks
 
 fixedSourceProblem :: (MonadReader SimSetup.SimSetup m, MonadState StdGen m, MonadWriter [Track] m)
                    => m ()

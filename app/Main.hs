@@ -9,6 +9,7 @@ import Particle
 import Score
 import Source
 import Source.Distributions
+import Stat
 import Vec
 
 setup :: SimSetup
@@ -16,7 +17,7 @@ setup = SimSetup { theXSec = xSec
                  , initialSeed = seed
                  , nShots = shots
                  , source = aSource
-                 , scores = [Score initTrackLengthScore]
+                 , scores = [TrackLength empty]
                  }
         where xSec = CrossSection $ ConstantXS totXSec absXSec
               totXSec = 1.0
@@ -45,12 +46,14 @@ main :: IO ()
 --          pAbs            = absXS/totXS
 --          expectedNPoints = 1 + 1/pAbs
 
-main = do print $ display score
-          print expectedNPoints
-    where score           = head $ runSimulation fixedSourceProblem setup
-          dummyDP         = mkDynParticle (Pos zero) (Mom $ cart 0 0 1)
-          theXS           = theXSec setup
-          absXS           = getAbsXS theXS dummyDP
-          totXS           = getTotXS theXS dummyDP
-          pAbs            = absXS/totXS
-          expectedNPoints = 1 + 1/pAbs
+main = do print calculatedNpts
+          print expectedNPts
+          print $ calculatedNpts `sigmasFrom` expectedNPts
+    where score        = head $ runSimulation fixedSourceProblem setup
+          (TrackLength calculatedNpts) = score
+          dummyDP      = mkDynParticle (Pos zero) (Mom $ cart 0 0 1)
+          theXS        = theXSec setup
+          absXS        = getAbsXS theXS dummyDP
+          totXS        = getTotXS theXS dummyDP
+          pAbs         = absXS/totXS
+          expectedNPts = 1 + 1/pAbs
