@@ -46,7 +46,7 @@ main :: IO ()
 --          pAbs            = absXS/totXS
 --          expectedNPoints = 1 + 1/pAbs
 
-main = do print calculatedNpts
+main = do putStrLn $ display calculatedNpts
           print expectedNPts
           print $ calculatedNpts `sigmasFrom` expectedNPts
     where score        = head $ runSimulation fixedSourceProblem setup

@@ -7,6 +7,7 @@ module Stat
 , variance
 , rms
 , sigmasFrom
+, display
 ) where
 
 data SVar a = SVar !a   -- ^ Sum of values.
@@ -54,3 +55,10 @@ sigmasFrom :: (Ord a, Floating a)
            -> a         -- ^ The value to compare to.
            -> Maybe a   -- ^ The discrepancy, in units of standard deviations.
 sigmasFrom sv ref = (\d -> (mean sv - ref) / d) <$> rms sv
+
+display :: (Show a, Fractional a, Ord a, Floating a)
+        => SVar a -> String
+display sv = show (mean sv) ++ " +- " ++ uncertainty
+    where uncertainty = case rms sv of
+                            Nothing -> "n/a"
+                            Just r -> show r
