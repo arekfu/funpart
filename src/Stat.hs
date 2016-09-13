@@ -39,7 +39,7 @@ mean (SVar s _ _ n) = s/fromIntegral n
 
 variance :: Fractional a => SVar a -> Maybe a
 variance (SVar s s2  _ n) 
-    | n>1 = Just $ (s2-s^(2::Int)/n')/(n'-1)
+    | n>1 = Just $ (s2-s^(2::Int)/n')/((n'-1)*n')
     | otherwise = Nothing
     where n' = fromIntegral n
 

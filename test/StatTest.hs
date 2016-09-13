@@ -26,7 +26,7 @@ prop_rmsCorrect l =
           xbar = naiveMean l
           residues = map (\x -> (x-xbar)^(2::Int)) l
           len = fromIntegral (length l)
-          naiveRMS = sqrt $ naiveMean residues * len / (len - 1)
+          naiveRMS = sqrt $ naiveMean residues / (len - 1)
 
 return []
 runTests :: IO Bool
