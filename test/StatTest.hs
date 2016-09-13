@@ -42,6 +42,27 @@ prop_weightedMeanCorrect l =
     where flatSVar = flattenSVar l
           sVar = foldl' (\sv (x, Positive n) -> tallyW sv x (fromIntegral n)) empty l
 
+-- | Assert that the mean is invariant if all the weights are equal.
+prop_homogeneousMean :: [Double] -> Double -> Property
+prop_homogeneousMean l w = not (null l) ==> mean_ ~== scaledMean
+    where sVar = foldl' tally empty l
+          mean_ = mean sVar
+          scaledSVar = foldl' (\sv x -> tallyW sv x w) empty l
+          scaledMean = mean scaledSVar
+
+-- | Assert that the RMS is invariant if all the weights are equal.
+prop_homogeneousRMS :: [Double] -> Double -> Property
+prop_homogeneousRMS l w = not (null l) ==> 
+    case (rms_, scaledRMS) of
+        (Nothing, Nothing) -> True
+        (Nothing, _)       -> False
+        (Just _, Nothing)  -> False
+        (Just r, Just sr)  -> r ~== sr
+    where sVar = foldl' tally empty l
+          rms_ = rms sVar
+          scaledSVar = foldl' (\sv x -> tallyW sv x w) empty l
+          scaledRMS = rms scaledSVar
+
 --prop_weightedRMSCorrect :: [(Double, Positive Int)] -> Property
 --prop_weightedRMSCorrect l =
 --    counterexample (show (rms sVar) ++ "; " ++ show (rms flatSVar) ++ "\n" ++ show sVar ++ "\n" ++ show flatSVar) $
