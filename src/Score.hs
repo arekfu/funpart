@@ -20,9 +20,10 @@ import Data.List (foldl')
 
 import Core
 import Track
+import Stat
 
 -- | A type synonim for more expressive function signatures.
-type ScoreValue = FPFloat
+type ScoreValue = SVar FPFloat
 
 {-| The class of types that behave like scores. Types in this class must
     define:
@@ -72,7 +73,7 @@ instance ScoreLike Score where
 
 -- | A collision-based flux score
 newtype CollFlux = CollFlux { _collFluxValue :: ScoreValue }
-    deriving (Show, Eq, Ord)
+    deriving (Show, Eq)
 
 -- make all the necessary lenses
 makeLenses ''CollFlux
@@ -81,10 +82,10 @@ makeLenses ''CollFlux
 instance ScoreLike CollFlux where
     updateByTrackPoint score trackPoint =
         case trackPoint^.pointType of
-            CollisionPoint xs _ -> over collFluxValue (+(1.0/xs)) score
+            CollisionPoint xs _ -> over collFluxValue (\v -> tally v (1.0/xs)) score
             _ -> score
     display score = "collision flux: " ++ show (score^.collFluxValue)
 
 -- | Generate an empty collision flux.
 initCollFluxScore :: CollFlux
-initCollFluxScore = CollFlux 0.0
+initCollFluxScore = CollFlux empty
