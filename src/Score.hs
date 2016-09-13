@@ -3,7 +3,7 @@ module Score (
   Score(..)
 , ScoreValue
 -- * Functions
-, updateAllByTracks
+, updateAllByBatch
 ) where
 
 import Control.Lens
@@ -30,12 +30,12 @@ updateByTrack (TrackLength val) track =  TrackLength $ tally val len
 updateByTrack score track = foldl' updateByTrackPoint score (_trackPoints track)
 
 -- | /Default implementation/: a fold over all the tracks.
-updateByTracks :: Score -> [Track] -> Score
-updateByTracks = foldl' updateByTrack
+updateByBatch :: Score -> [Track] -> Score
+updateByBatch = foldl' updateByTrack
 
--- | Helper function to map updateByTracks on a list of scores.
-updateAllByTracks :: [Score] -> [Track] -> [Score]
-updateAllByTracks scores tracks = map (`updateByTracks` tracks) scores
+-- | Helper function to map updateByBatch on a list of scores.
+updateAllByBatch :: [Score] -> [Track] -> [Score]
+updateAllByBatch scores tracks = map (`updateByBatch` tracks) scores
 
 
 -- | A wrapper GADT for heterogeneous collections of ScoreLike objects.

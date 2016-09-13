@@ -29,7 +29,7 @@ runSimulation :: Problem a -> SimSetup.SimSetup -> [Score]
 runSimulation problem setup = scores
                            where tracks = snd $ runProblem problem setup
                                  emptyScores = SimSetup.scores setup
-                                 scores = updateAllByTracks emptyScores tracks
+                                 scores = updateAllByBatch emptyScores tracks
 
 fixedSourceProblem :: (MonadReader SimSetup.SimSetup m, MonadState StdGen m, MonadWriter [Track] m)
                    => m ()
