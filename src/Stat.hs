@@ -10,10 +10,9 @@ module Stat
 , display
 ) where
 
-data SVar a = SVar !a   -- ^ Sum of values.
-                   !a   -- ^ Sum of squares of the values.
-                   !a   -- ^ Sum of the weights.
-                   !a   -- ^ Sum of the squares of the weights.
+data SVar a = SVar !a !a !a !a  -- ^ Sum of values, sum of squares of the
+                                -- values, sum of the weights and sum of the
+                                -- squares of the weights.
 
 instance Show a => Show (SVar a) where
     show (SVar s s2 w w2) = show (s, s2, w, w2)

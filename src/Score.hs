@@ -38,7 +38,7 @@ updateAllByBatch :: [Score] -> [Track] -> [Score]
 updateAllByBatch scores tracks = map (`updateByBatch` tracks) scores
 
 
--- | A wrapper GADT for heterogeneous collections of ScoreLike objects.
+-- | A union type for different scores.
 data Score = CollFlux ScoreValue       -- ^ A collision-based flux score.
            | TrackLength ScoreValue    -- ^ A track-length score.
     deriving (Show, Eq)
