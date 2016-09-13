@@ -52,12 +52,7 @@ prop_homogeneousMean l w = not (null l) ==> mean_ ~== scaledMean
 
 -- | Assert that the RMS is invariant if all the weights are equal.
 prop_homogeneousRMS :: [Double] -> Double -> Property
-prop_homogeneousRMS l w = not (null l) ==> 
-    case (rms_, scaledRMS) of
-        (Nothing, Nothing) -> True
-        (Nothing, _)       -> False
-        (Just _, Nothing)  -> False
-        (Just r, Just sr)  -> r ~== sr
+prop_homogeneousRMS l w = not (null l) ==> rms_ ~== scaledRMS
     where sVar = foldl' tally empty l
           rms_ = rms sVar
           scaledSVar = foldl' (\sv x -> tallyW sv x w) empty l
