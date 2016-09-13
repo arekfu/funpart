@@ -6,6 +6,7 @@ module StatTest
 
 import Test.QuickCheck
 import Data.Foldable (foldl')
+import Data.Maybe (fromJust)
 
 import Approx
 import Stat
@@ -20,7 +21,7 @@ prop_meanCorrect l = not (null l) ==> svarMean ~== naiveMean l
 prop_rmsCorrect :: [Double] -> Property
 prop_rmsCorrect l =
     counterexample (show (rms svar) ++ "; " ++ show naiveRMS ++ "\n" ++ show svar ++ "\n" ++ show residues) $
-    length l > 1 ==> rms svar ~== naiveRMS
+    length l > 1 ==> fromJust (rms svar) ~== naiveRMS
     where svar = foldl' score empty l
           xbar = naiveMean l
           residues = map (\x -> (x-xbar)^(2::Int)) l

@@ -31,11 +31,11 @@ scoreW (SVar s s2 w n) w' x = SVar (s+w'*x) (s2 + (w'*x)^(2::Int)) (w+w') (n+1)
 mean :: Fractional a => SVar a -> a
 mean (SVar s _ _ n) = s/fromIntegral n
 
-variance :: Fractional a => SVar a -> a
+variance :: Fractional a => SVar a -> Maybe a
 variance (SVar s s2  _ n) 
-    | n>1 = (s2-s^(2::Int)/n')/(n'-1)
-    | otherwise = 0
+    | n>1 = Just $ (s2-s^(2::Int)/n')/(n'-1)
+    | otherwise = Nothing
     where n' = fromIntegral n
 
-rms :: Floating a => SVar a -> a
-rms = sqrt . variance
+rms :: Floating a => SVar a -> Maybe a
+rms = fmap sqrt . variance
