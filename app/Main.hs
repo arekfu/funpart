@@ -2,15 +2,15 @@ module Main where
 
 import Data.List (foldl')
 
-import SimSetup
-import Problem
-import CrossSection
-import Particle
-import Score
-import Source
-import Source.Distributions
-import Stat
-import Vec
+import Physics.FunPart.SimSetup
+import Physics.FunPart.Problem
+import Physics.FunPart.CrossSection
+import Physics.FunPart.Particle
+import Physics.FunPart.Score
+import Physics.FunPart.Source
+import Physics.FunPart.Source.Distributions
+import Physics.FunPart.Stat
+import Physics.FunPart.Vec
 
 setup :: SimSetup
 setup = SimSetup { theXSec = xSec

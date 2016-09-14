@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module MC
+module Physics.FunPart.MC
 ( MC
 , Seed
 , uniform
@@ -16,8 +16,8 @@ import System.Random
 import Control.Monad.State
 import qualified Data.Vector as V
 
-import Core
-import Vec
+import Physics.FunPart.Core
+import Physics.FunPart.Vec
 
 type Seed = Int
 

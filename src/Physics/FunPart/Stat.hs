@@ -1,4 +1,4 @@
-module Stat
+module Physics.FunPart.Stat
 ( SVar
 , empty
 , tally

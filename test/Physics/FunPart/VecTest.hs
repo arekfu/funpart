@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, GeneralizedNewtypeDeriving #-}
 
-module VecTest
+module Physics.FunPart.VecTest
 ( runTests
 , AVec3(..)
 ) where
@@ -8,8 +8,8 @@ module VecTest
 import Test.QuickCheck
 import Control.Monad (liftM3)
 
-import Approx
-import Vec
+import Physics.FunPart.Approx
+import Physics.FunPart.Vec
 
 newtype (Approx a) => AVec3 a = AVec3 { aVec :: Vec3 a }
     deriving (VecSpace a, EuclidVecSpace a, Show, Eq, Functor, Monoid)

@@ -1,4 +1,4 @@
-module Approx
+module Physics.FunPart.Approx
 ( (~==)
 , distance
 , Approx

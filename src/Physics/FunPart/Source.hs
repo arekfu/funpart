@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs, FlexibleContexts #-}
 
-module Source
+module Physics.FunPart.Source
 ( SourceLike(..)
 , Source(..)
 , FactorizedSource(..)
@@ -10,9 +10,9 @@ module Source
 import System.Random (StdGen)
 import Control.Monad.State.Class (MonadState)
 
-import Core
-import Particle
-import Source.Distributions
+import Physics.FunPart.Core
+import Physics.FunPart.Particle
+import Physics.FunPart.Source.Distributions
 
 type SourceIntensity = FPFloat
 

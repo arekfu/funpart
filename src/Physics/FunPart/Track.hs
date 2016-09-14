@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-} -- for makeLenses
 --{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Track
+module Physics.FunPart.Track
 ( Collision(..)
 , primary
 , secondaries
@@ -20,8 +20,8 @@ module Track
 import Control.Lens (makeLenses)
 import Data.Sequence (Seq)
 
-import Particle
-import CrossSection
+import Physics.FunPart.Particle
+import Physics.FunPart.CrossSection
 
 data Collision = Elastic { _primary :: !Particle }
                | Inelastic { _secondaries :: ![Track] }

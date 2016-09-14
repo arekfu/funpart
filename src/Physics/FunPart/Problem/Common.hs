@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Problem.Common
+module Physics.FunPart.Problem.Common
 ( runHistory
 , nextStep
 , steps
@@ -16,13 +16,13 @@ import Control.Lens
 import Data.Maybe (fromJust)
 import Data.Sequence (Seq, singleton)
 
-import qualified SimSetup
-import CrossSection (getAbsXS, getTotXS, CrossSectionValue)
-import Particle
-import Track
-import Source
-import MC (uniform, sampleExp, sampleIsoVec)
-import VecSpace (mag)
+import qualified Physics.FunPart.SimSetup as SimSetup
+import Physics.FunPart.CrossSection (getAbsXS, getTotXS, CrossSectionValue)
+import Physics.FunPart.Particle
+import Physics.FunPart.Track
+import Physics.FunPart.Source
+import Physics.FunPart.MC (uniform, sampleExp, sampleIsoVec)
+import Physics.FunPart.VecSpace (mag)
 
 distanceToCollision :: (MonadState StdGen m, MonadReader SimSetup.SimSetup m)
                     => Particle

@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, FunctionalDependencies #-}
 
-module VecSpace
+module Physics.FunPart.VecSpace
 ( VecSpace(..)
 , EuclidVecSpace(..)
 ) where

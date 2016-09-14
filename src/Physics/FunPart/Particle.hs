@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, TemplateHaskell #-}
 
-module Particle
+module Physics.FunPart.Particle
 ( mkParticle
 , mkParticleFromDyn
 , mkDynParticle
@@ -27,10 +27,11 @@ module Particle
 , Dynamic(..)
 ) where
 
-import Core
-import Vec
-import Approx
 import Control.Lens
+
+import Physics.FunPart.Core
+import Physics.FunPart.Vec
+import Physics.FunPart.Approx
 
 newtype Position = Pos { _positionVec :: FPVec3 }
     deriving (Show, Eq, VecSpace FPFloat, Approx)

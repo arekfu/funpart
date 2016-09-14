@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module ProblemTest
+module Physics.FunPart.ProblemTest
 ( runTests
 ) where
 
@@ -9,15 +9,15 @@ import Control.Lens ((^.))
 import Data.Maybe (fromJust)
 import Data.Sequence (Seq, viewl, ViewL(..))
 
-import ParticleTest hiding (runTests)
-import SimSetupTest
+import Physics.FunPart.ParticleTest hiding (runTests)
+import Physics.FunPart.SimSetupTest
 
-import Approx
-import Particle
-import Problem
-import Problem.Common
-import Track
-import Vec
+import Physics.FunPart.Approx
+import Physics.FunPart.Particle
+import Physics.FunPart.Problem
+import Physics.FunPart.Problem.Common
+import Physics.FunPart.Track
+import Physics.FunPart.Vec
 
 prop_nextStepType :: AParticle -> ASimSetup -> Property
 prop_nextStepType (AParticle p) (ASimSetup setup) =

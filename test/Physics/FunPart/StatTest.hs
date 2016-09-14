@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module StatTest
+module Physics.FunPart.StatTest
 ( runTests
 ) where
 
@@ -8,8 +8,8 @@ import Test.QuickCheck
 import Data.Foldable (foldl')
 import Data.Maybe (isNothing, fromJust)
 
-import Approx
-import Stat
+import Physics.FunPart.Approx
+import Physics.FunPart.Stat
 
 naiveMean :: [Double] -> Double
 naiveMean l = sum l / fromIntegral (length l)

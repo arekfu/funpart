@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module MCTest
+module Physics.FunPart.MCTest
 ( runTests
 ) where
 
@@ -10,10 +10,10 @@ import Data.Maybe (isNothing)
 import System.Random (mkStdGen)
 import Control.Monad.State (evalState)
 
-import Core
-import Approx
-import MC
-import Vec
+import Physics.FunPart.Core
+import Physics.FunPart.Approx
+import Physics.FunPart.MC
+import Physics.FunPart.Vec
 
 newtype PositiveVector a = PositiveVector (V.Vector a)
                            deriving (Show, Eq, Ord)

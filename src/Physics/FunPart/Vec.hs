@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleInstances #-}
 
-module Vec
+module Physics.FunPart.Vec
 ( cart
 , Vec3()
 , FPVec3()
@@ -13,9 +13,9 @@ module Vec
 , EuclidVecSpace(..)
 ) where
 
-import Core
-import VecSpace
-import Approx
+import Physics.FunPart.Core
+import Physics.FunPart.VecSpace
+import Physics.FunPart.Approx
 
 data Vec3 a = Vec3 !a !a !a deriving Eq
 

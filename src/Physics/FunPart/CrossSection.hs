@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, GADTs #-}
 
-module CrossSection
+module Physics.FunPart.CrossSection
 ( CrossSectionValue
 , CrossSectionLike(..)
 , CrossSection(..)
@@ -11,8 +11,8 @@ module CrossSection
 
 import Control.Lens (makeLenses)
 
-import Core
-import Particle
+import Physics.FunPart.Core
+import Physics.FunPart.Particle
 
 type CrossSectionValue = FPFloat
 

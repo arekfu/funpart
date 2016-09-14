@@ -1,11 +1,11 @@
-module SimSetup
+module Physics.FunPart.SimSetup
 ( SimSetup(..)
 ) where
 
-import CrossSection
-import Source
-import Score
-import MC (Seed)
+import Physics.FunPart.CrossSection
+import Physics.FunPart.Source
+import Physics.FunPart.Score
+import Physics.FunPart.MC (Seed)
 
 data SimSetup =
     SimSetup { theXSec     :: CrossSection

@@ -1,16 +1,16 @@
-module SimSetupTest
+module Physics.FunPart.SimSetupTest
 ( ASimSetup(..)
 ) where
 
 import Test.QuickCheck
 
-import Core
-import VecTest (AVec3, aVec)
-import SimSetup
-import CrossSection
-import Particle
-import Source
-import Source.Distributions
+import Physics.FunPart.Core
+import Physics.FunPart.VecTest (AVec3, aVec)
+import Physics.FunPart.SimSetup
+import Physics.FunPart.CrossSection
+import Physics.FunPart.Particle
+import Physics.FunPart.Source
+import Physics.FunPart.Source.Distributions
 
 newtype ASimSetup = ASimSetup SimSetup deriving Show
 

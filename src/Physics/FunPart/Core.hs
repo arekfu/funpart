@@ -1,4 +1,4 @@
-module Core
+module Physics.FunPart.Core
 ( FPFloat
 , twoPi
 ) where

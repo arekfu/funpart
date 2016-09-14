@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, FlexibleContexts #-}
 
-module Source.Distributions
+module Physics.FunPart.Source.Distributions
 ( SpaceDistribution(..)
 , center
 , MomentumDistribution(..)
@@ -13,9 +13,9 @@ import Control.Lens
 import Control.Monad.State.Class (MonadState)
 import System.Random (StdGen)
 
-import Core
-import Particle
-import MC (sampleIsoVec)
+import Physics.FunPart.Core
+import Physics.FunPart.Particle
+import Physics.FunPart.MC (sampleIsoVec)
 
 class SpaceDistribution a where
     samplePosition :: MonadState StdGen m => a -> m Position

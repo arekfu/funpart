@@ -1,4 +1,4 @@
-module Score (
+module Physics.FunPart.Score (
 -- * Types
   Score(..)
 , ScoreValue
@@ -9,9 +9,9 @@ module Score (
 import Control.Lens
 import Data.List (foldl')
 
-import Core
-import Track
-import Stat
+import Physics.FunPart.Core
+import Physics.FunPart.Track
+import Physics.FunPart.Stat
 
 -- | A type synonim for more expressive function signatures.
 type ScoreValue = SVar FPFloat

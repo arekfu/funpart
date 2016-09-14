@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts, GeneralizedNewtypeDeriving #-}
 
-module Problem
+module Physics.FunPart.Problem
 ( Problem
 , runProblem
 , runSimulation
@@ -10,10 +10,10 @@ module Problem
 import Control.Monad.RWS (RWS, evalRWS, asks, replicateM_, MonadReader, MonadState, MonadWriter)
 import System.Random (mkStdGen, StdGen)
 
-import qualified SimSetup
-import Problem.Common
-import Score
-import Track
+import qualified Physics.FunPart.SimSetup as SimSetup
+import Physics.FunPart.Problem.Common
+import Physics.FunPart.Score
+import Physics.FunPart.Track
 
 newtype Problem a = Problem { unProblem :: RWS SimSetup.SimSetup [Track] StdGen a }
                     deriving (Monad, MonadReader SimSetup.SimSetup, MonadState StdGen, MonadWriter [Track], Applicative, Functor)

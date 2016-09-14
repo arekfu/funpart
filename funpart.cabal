@@ -16,21 +16,21 @@ tested-with:         GHC == 7.10.3, GHC == 8.0.1
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Core
-                     , Vec
-                     , VecSpace
-                     , Approx
-                     , Particle
-                     , CrossSection
-                     , Track
-                     , MC
-                     , SimSetup
-                     , Problem
-                     , Problem.Common
-                     , Score
-                     , Source
-                     , Source.Distributions
-                     , Stat
+  exposed-modules:     Physics.FunPart.Core
+                     , Physics.FunPart.Vec
+                     , Physics.FunPart.VecSpace
+                     , Physics.FunPart.Approx
+                     , Physics.FunPart.Particle
+                     , Physics.FunPart.CrossSection
+                     , Physics.FunPart.Track
+                     , Physics.FunPart.MC
+                     , Physics.FunPart.SimSetup
+                     , Physics.FunPart.Problem
+                     , Physics.FunPart.Problem.Common
+                     , Physics.FunPart.Score
+                     , Physics.FunPart.Source
+                     , Physics.FunPart.Source.Distributions
+                     , Physics.FunPart.Stat
   build-depends:       base < 5
                      , lens
                      , random
@@ -62,12 +62,12 @@ test-suite funpart-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
-  other-modules:       VecTest
-                     , ParticleTest
-                     , MCTest
-                     , ProblemTest
-                     , SimSetupTest
-                     , StatTest
+  other-modules:       Physics.FunPart.VecTest
+                     , Physics.FunPart.ParticleTest
+                     , Physics.FunPart.MCTest
+                     , Physics.FunPart.ProblemTest
+                     , Physics.FunPart.SimSetupTest
+                     , Physics.FunPart.StatTest
   build-depends:       base
                      , lens
                      , vector

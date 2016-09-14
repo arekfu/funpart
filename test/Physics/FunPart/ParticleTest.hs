@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, GeneralizedNewtypeDeriving #-}
 
-module ParticleTest
+module Physics.FunPart.ParticleTest
 ( runTests
 , AParticleType(..)
 , ADynParticle(..)
@@ -9,12 +9,12 @@ module ParticleTest
 
 import Test.QuickCheck
 import Data.Maybe (isNothing, isJust, fromMaybe)
-
-import qualified VecTest as VT
-import VecSpace
-import Particle
-import Approx
 import Control.Lens (view, set)
+
+import qualified Physics.FunPart.VecTest as VT
+import Physics.FunPart.VecSpace
+import Physics.FunPart.Particle
+import Physics.FunPart.Approx
 
 newtype AParticleType = AParticleType { aParticleType :: ParticleType }
                         deriving (Show, Eq)
