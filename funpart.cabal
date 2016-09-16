@@ -67,6 +67,7 @@ test-suite funpart-test
   other-modules:       Physics.FunPart.VecTest
                      , Physics.FunPart.ParticleTest
                      , Physics.FunPart.MCTest
+                     , Physics.FunPart.MeshTest
                      , Physics.FunPart.ProblemTest
                      , Physics.FunPart.SimSetupTest
                      , Physics.FunPart.StatTest

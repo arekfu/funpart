@@ -14,7 +14,8 @@
 {-# LANGUAGE GADTs #-}
 
 module Physics.FunPart.Mesh
-( axisSpec
+( InterpolationType(..)
+, axisSpec
 , AxisSpec
 , findOnAxis
 , MeshSpec(..)
