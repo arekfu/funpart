@@ -15,7 +15,7 @@ newtype (Approx a) => AVec3 a = AVec3 { aVec :: Vec3 a }
     deriving (VecSpace a, EuclidVecSpace a, Show, Eq, Functor, Monoid)
 
 instance (Approx a, Arbitrary a) => Arbitrary (AVec3 a) where
-    arbitrary = AVec3 <$> liftM3 cart arbitrary arbitrary arbitrary
+    arbitrary = AVec3 <$> liftM3 Vec3 arbitrary arbitrary arbitrary
 
 instance (Approx a, Real a, Floating a) => Approx (AVec3 a) where
     distance (AVec3 v1) (AVec3 v2) = distance v1 v2

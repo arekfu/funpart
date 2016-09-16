@@ -1,9 +1,8 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleInstances #-}
 
 module Physics.FunPart.Vec
-( cart
-, Vec3()
-, FPVec3()
+( Vec3(..)
+, FPVec3
 , normalize
 , toUnitVector
 , iHat
@@ -56,10 +55,6 @@ normalize newNorm v = let norm = mag v
 
 toUnitVector :: FPVec3 -> Maybe FPVec3
 toUnitVector = normalize 1.0
-
--- | the actual value constructor
-cart :: a -> a -> a -> Vec3 a
-cart = Vec3
 
 -- | x-axis unit vector
 iHat :: Num a => Vec3 a

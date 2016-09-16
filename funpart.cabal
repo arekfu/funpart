@@ -17,12 +17,14 @@ tested-with:         GHC == 7.10.3, GHC == 8.0.1
 library
   hs-source-dirs:      src
   exposed-modules:     Physics.FunPart.Core
+                     , Physics.FunPart.Coords
                      , Physics.FunPart.Vec
                      , Physics.FunPart.VecSpace
                      , Physics.FunPart.Approx
                      , Physics.FunPart.Particle
                      , Physics.FunPart.CrossSection
                      , Physics.FunPart.Track
+                     , Physics.FunPart.Mesh
                      , Physics.FunPart.MC
                      , Physics.FunPart.SimSetup
                      , Physics.FunPart.Problem

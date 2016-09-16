@@ -51,7 +51,7 @@ main = do putStrLn $ display calculatedNpts
           print $ calculatedNpts `sigmasFrom` expectedNPts
     where score        = head $ runSimulation fixedSourceProblem setup
           (TrackLength calculatedNpts) = score
-          dummyDP      = mkDynParticle (Pos zero) (Mom $ cart 0 0 1)
+          dummyDP      = mkDynParticle (Pos zero) (Mom kHat)
           theXS        = theXSec setup
           absXS        = getAbsXS theXS dummyDP
           totXS        = getTotXS theXS dummyDP

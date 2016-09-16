@@ -73,4 +73,4 @@ sampleIsoVec norm = do
         x = norm * sin theta * cos phi
         y = norm * sin theta * sin phi
         z = norm * cos theta
-     in return $ cart x y z
+     in return $ Vec3 x y z
