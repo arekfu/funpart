@@ -21,6 +21,10 @@ module Physics.FunPart.Mesh
 , MeshSpec(..)
 , meshBins
 , findInMeshCoords
+, toSeqIndex
+, maybeToSeqIndex
+, fromSeqIndex
+, maybefromSeqIndex
 , Mesh
 , cartesianMesh
 , sphericalMesh
@@ -28,6 +32,7 @@ module Physics.FunPart.Mesh
 , linMeshSpec
 , Field
 , field
+, fieldFrom
 ) where
 
 import qualified Data.Vector.Unboxed as V
@@ -108,6 +113,41 @@ findInMeshCoords (MeshSpec uAx vAx wAx) u v w = do iu <- findOnAxis uAx u
                                                    iw <- findOnAxis wAx w
                                                    return (iu, iv, iw)
 
+-- | Transform a triplet of mesh indices in a one-dimensional index, suitable
+-- for indexing in a flat, one-dimensional representation of the mesh values.
+toSeqIndex :: MeshSpec -> (Int, Int, Int) -> Int
+toSeqIndex (MeshSpec uAx vAx _) (iu, iv, iw) = iw + nv * (iv + nu * iu)
+    where nu = nBins uAx
+          nv = nBins vAx
+
+-- | Safe version of 'toSeqIndex'.
+maybeToSeqIndex :: MeshSpec -> (Int, Int, Int) -> Maybe Int
+maybeToSeqIndex spec indices =
+    if i<0 || i>=n then Nothing else Just i
+    where i = toSeqIndex spec indices
+          n = meshBins spec
+
+-- | Transform a triplet of mesh indices in a one-dimensional index, suitable
+-- for indexing in a flat, one-dimensional representation of the mesh values.
+fromSeqIndex :: MeshSpec -> Int -> (Int, Int, Int)
+fromSeqIndex (MeshSpec uAx vAx _) i = (iu, iv, iw)
+    where nu = nBins uAx
+          nv = nBins vAx
+          iw = i `mod` nv
+          jv = i `div` nv
+          iv = jv `mod` nu
+          iu = jv `div` nu
+
+-- | Safe version of 'fromSeqIndex'.
+maybefromSeqIndex :: MeshSpec -> Int -> Maybe (Int, Int, Int)
+maybefromSeqIndex spec@(MeshSpec uAx vAx wAx) i =
+    if iu<0 || iu>=nu || iv<0 || iv>=nv || iw<0 || iw>=nw then Nothing else Just trip
+    where trip@(iu, iv, iw) = fromSeqIndex spec i
+          nu = nBins uAx
+          nv = nBins vAx
+          nw = nBins wAx
+
+
 -- | The full description of a mesh. The 'FPVec3' parameter specifies the
 -- origin for the positioning of the mesh.
 data Mesh where
@@ -127,9 +167,18 @@ sphericalMesh = Mesh sphericalTransform
 cylindricalMesh :: RealFloat a => MeshSpec -> Vec3 a -> Mesh
 cylindricalMesh = Mesh cylindricalTransform
 
--- | A field carrying values of type 'a' defined on a mesh.
+
+-- | A field carrying values of type 'a' defined on a mesh. The values are
+-- internally stored in a flat one-dimensional vector.
 data Field a = Field Mesh (V.Vector a)
 
--- | Construct an empty field on the given mesh.
+-- | Construct a zero field on the given mesh.
 field :: (Num a, V.Unbox a) => Mesh -> Field a
 field mesh@(Mesh _ spec _) = Field mesh $ V.replicate (meshBins spec) 0
+
+-- | Construct a field on the given mesh given a value constructor. The
+-- constructor will be passed the mesh indices of the cell to initialize.
+fieldFrom :: (Num a, V.Unbox a) => Mesh -> ((Int, Int, Int) -> a) -> Field a
+fieldFrom mesh@(Mesh _ spec _) constructor =
+    Field mesh $ V.generate (meshBins spec) generator
+    where generator = constructor . fromSeqIndex spec
