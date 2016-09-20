@@ -14,9 +14,9 @@ instance Arbitrary AInterpolationType where
     arbitrary = AInterpolationType <$> elements [LinInterpolation, LogInterpolation]
 
 
-newtype AAxisSpec = AAxisSpec AxisSpec deriving (Show, Eq)
+newtype AAxisSpec a = AAxisSpec (AxisSpec a) deriving (Show, Eq)
 
-instance Arbitrary AAxisSpec where
+instance (Arbitrary a, RealFloat a) => Arbitrary (AAxisSpec a) where
     arbitrary = do (AInterpolationType iType) <- arbitrary :: Gen AInterpolationType
                    a1 <- arbitrary
                    a2 <- arbitrary
